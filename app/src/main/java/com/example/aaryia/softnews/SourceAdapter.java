@@ -1,5 +1,6 @@
 package com.example.aaryia.softnews;
 
+import android.content.Context;
 import android.database.DataSetObserver;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.RecyclerView;
@@ -17,10 +18,12 @@ import java.util.List;
 class SourceAdapter extends RecyclerView.Adapter<MyViewHolder> {
 
     List<SourceObject> list;
+    Context context;
 
     //ajouter un constructeur prenant en entrée une liste
-    public SourceAdapter(List<SourceObject> list) {
+    public SourceAdapter(List<SourceObject> list, Context context) {
         this.list = list;
+        this.context = context;
     }
 
     //cette fonction permet de créer les viewHolder
@@ -28,7 +31,7 @@ class SourceAdapter extends RecyclerView.Adapter<MyViewHolder> {
     @Override
     public MyViewHolder onCreateViewHolder(ViewGroup viewGroup, int itemType) {
         View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.fragment_item,viewGroup,false);
-        return new MyViewHolder(view);
+        return new MyViewHolder(view,context);
     }
 
     //c'est ici que nous allons remplir notre cellule avec le texte/image de chaque MyObjects

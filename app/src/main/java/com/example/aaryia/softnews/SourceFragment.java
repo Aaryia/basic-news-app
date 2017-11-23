@@ -50,7 +50,7 @@ public class SourceFragment extends android.support.v4.app.Fragment implements A
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.i(TAG, "onCreate: Successfully created a SourceFragment ");
-        mAdapter = new SourceAdapter(ITEMS);
+        mAdapter = new SourceAdapter(ITEMS,getContext());
     }
 
     @Override

@@ -27,8 +27,6 @@ public class SourceDisplayActivity extends AppCompatActivity implements SourceFr
         super.onCreate(savedInstanceState);
         setContentView(R.layout.loader);
         volleyConnectionSource(savedInstanceState);
-        setContentView(R.layout.activity_source_display);
-
     }
 
     /* Méthode à implementer permettant l’interaction avec le fragment */
@@ -50,6 +48,7 @@ public class SourceDisplayActivity extends AppCompatActivity implements SourceFr
             public void onResponse(JSONObject response) {
                 jsonObject = response;
                 SourceFragment sourceFragment = new SourceFragment();
+                setContentView(R.layout.activity_source_display);
                 if (savedInstanceState == null) {
                     getSupportFragmentManager().beginTransaction()
                             .add(R.id.container, sourceFragment)

@@ -1,5 +1,7 @@
 package com.example.aaryia.softnews;
 
+import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.provider.ContactsContract;
 import android.support.v7.widget.RecyclerView;
@@ -20,10 +22,12 @@ public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClic
     private static String TAG = "ViewHolder";
     private TextView textView;
     private ImageView imageView;
+    Context context;
 
     //itemView est la vue correspondante à 1 cellule
-    public MyViewHolder(View itemView) {
+    public MyViewHolder(View itemView,Context context) {
         super(itemView);
+        this.context=context;
 
         //c'est ici que l'on fait nos findView
 
@@ -63,5 +67,10 @@ public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClic
         Log.i(TAG, "onClick: Activated view = "+ITEMS.get(getLayoutPosition()).getName());
         int itemPosition = getLayoutPosition();
         String source = ITEMS.get(itemPosition).getId();
+        Intent myIntent = new Intent(context,ArticleListActivity.class);
+        myIntent.putExtra("source",source);
+        context.startActivity(myIntent);
+
+
     }
 }
