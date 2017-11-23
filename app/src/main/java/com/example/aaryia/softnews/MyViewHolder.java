@@ -8,6 +8,8 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import static com.example.aaryia.softnews.SourceList.ITEMS;
+
 
 /**
  * Created by aaryia on 23/11/17.
@@ -58,6 +60,8 @@ public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClic
 
     @Override
     public void onClick(View view) {
-        Log.i(TAG, "onClick: Activated view");
+        Log.i(TAG, "onClick: Activated view = "+ITEMS.get(getLayoutPosition()).getName());
+        int itemPosition = getLayoutPosition();
+        String source = ITEMS.get(itemPosition).getId();
     }
 }

@@ -33,48 +33,26 @@ import static com.example.aaryia.softnews.SourceList.*;
 
 public class SourceFragment extends android.support.v4.app.Fragment implements AbsListView.OnItemClickListener {
 
-    // TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
     private View view = null;
     private OnFragmentInteractionListener mListener;
 
+     //The fragment's ListView/GridView.
+     private RecyclerView mListView;
 
-    /**
-     * The fragment's ListView/GridView.
-     */
-    private RecyclerView mListView;
-    /**
-     * The Adapter which will be used to populate the ListView/GridView with
-     * Views.
-     */private SourceAdapter mAdapter;
+     //The Adapter which will be used to populate the ListView/GridView withViews.
+     private SourceAdapter mAdapter;
 
 
-    // TODO: Rename and change types of parameters
-    public static SourceFragment newInstance(String param1, String param2) {
-        SourceFragment fragment = new SourceFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-    /**
-     * Mandatory empty constructor for the fragment manager to instantiate the
-     * fragment (e.g. upon screen orientation changes).
-     */
     public SourceFragment() {
     }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.i(TAG, "onCreate: Successfully created a SourceFragment ");
-
-// TODO: Change Adapter to display your content
-       mAdapter = new SourceAdapter(ITEMS);
+        mAdapter = new SourceAdapter(ITEMS);
     }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -92,8 +70,6 @@ public class SourceFragment extends android.support.v4.app.Fragment implements A
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-        Log.i(TAG, "Began to Attach");
-
         try {
             mListener = (OnFragmentInteractionListener) activity;
         } catch (ClassCastException e) {
