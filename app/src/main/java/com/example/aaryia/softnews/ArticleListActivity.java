@@ -71,7 +71,7 @@ public class ArticleListActivity extends AppCompatActivity implements ArticleFra
 
                             Log.i(TAG, "onCreateView: " + jsonObject.getJSONArray("articles").getJSONObject(i).getString("title"));
                             //Puts all the sources in a sourceList.
-                            addArticleItem(new ArticleObject(jsonObject.getJSONArray("articles").getJSONObject(i)), news_source);
+                            addArticleItem(new ArticleObject(jsonObject.getJSONArray("articles").getJSONObject(i), news_source));
                         }
                     } catch (Exception e) {
                         Log.e(TAG, "onAttach: Error thrown while JSON parsing", e);
