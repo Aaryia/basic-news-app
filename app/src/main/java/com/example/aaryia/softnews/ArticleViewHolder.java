@@ -13,7 +13,7 @@ import android.widget.TextView;
  * Created by aaryia on 23/11/17.
  */
 
-public class ArticleViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+public class ArticleViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
     private static String TAG = "ViewHolder";
     private TextView textView_title;
@@ -34,18 +34,37 @@ public class ArticleViewHolder extends RecyclerView.ViewHolder implements View.O
 
     //puis ajouter une fonction pour remplir la cellule en fonction d'un SourceObject
 
-    public void bind(ArticleObject myObject){
+    public void bind(ArticleObject myObject) {
         textView_title.setText(myObject.getTitle());
         textView_description.setText(myObject.getDescription());
-        if(myObject.getUrlToImage()!=null){
+        if (myObject.getUrlToImage() != null) {
 
+
+        } else {
+            switch(myObject.getSource()) {
+                case "google-news-fr":
+                    imageView.setImageResource(R.drawable.google_logo);
+                    break;
+                case "le-monde":
+                    imageView.setImageResource(R.drawable.le_monde);
+                    break;
+                case "lequipe":
+                    imageView.setImageResource(R.drawable.l_equipe);
+                    break;
+                case "les-echos":
+                    imageView.setImageResource(R.drawable.les_echos);
+                    break;
+                case "liberation":
+                    imageView.setImageResource(R.drawable.liberation);
+                    break;
+                default:
+                    imageView.setImageResource(R.drawable.question_mark);
+                    break;
+            }
         }
-
     }
-
-    @Override
-    public void onClick(View view) {
-        Log.i(TAG, "onClick: Activated view");
-
-    }
+        @Override
+        public void onClick(View view) {
+            Log.i(TAG, "onClick: Activated view");
+        }
 }

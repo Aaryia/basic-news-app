@@ -24,16 +24,16 @@ public class ArticleListActivity extends AppCompatActivity implements ArticleFra
 
     private static String TAG = "ArticleListActivity";
     private JSONObject jsonObject = null;
-    private String source = "";
+    private String news_source = "";
 
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.loader);
         Bundle extras = getIntent().getExtras();
         if(extras!=null) {
-            source = extras.getString("source");
+            news_source = extras.getString("source");
         }
-        volleyConnectionArticles(savedInstanceState,source);
+        volleyConnectionArticles(savedInstanceState,news_source);
     }
 
 
@@ -71,7 +71,7 @@ public class ArticleListActivity extends AppCompatActivity implements ArticleFra
 
                             Log.i(TAG, "onCreateView: " + jsonObject.getJSONArray("articles").getJSONObject(i).getString("title"));
                             //Puts all the sources in a sourceList.
-                            addArticleItem(new ArticleObject(jsonObject.getJSONArray("articles").getJSONObject(i)));
+                            addArticleItem(new ArticleObject(jsonObject.getJSONArray("articles").getJSONObject(i)), news_source);
                         }
                     } catch (Exception e) {
                         Log.e(TAG, "onAttach: Error thrown while JSON parsing", e);

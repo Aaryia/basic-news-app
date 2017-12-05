@@ -11,19 +11,22 @@ import org.json.JSONObject;
 
 class ArticleObject {
 
+    private String source = "";
     private String author = "Unknown";
     private String title = "";
     private String url = "";
     private String description = "Pas de description pour cet article, désolé";
     private String urlToImage = "";
 
-    ArticleObject(JSONObject jsonObject){
+
+    ArticleObject(JSONObject jsonObject, String source){
         try{
             if(jsonObject.getString("author")!=null){author = jsonObject.getString("author");}
-            if(jsonObject.getString("author")!=null){title = jsonObject.getString("title");}
-            if(jsonObject.getString("author")!=null){url = jsonObject.getString("url");}
-            if(jsonObject.getString("author")!=null){ urlToImage = jsonObject.getString("urlToImage");}
+            if(jsonObject.getString("title")!=null){title = jsonObject.getString("title");}
+            if(jsonObject.getString("url")!=null){url = jsonObject.getString("url");}
+            if(jsonObject.getString("urlToImage")!=null){ urlToImage = jsonObject.getString("urlToImage");}
             if(jsonObject.getString("description")!=null){ description = jsonObject.getString("description");}
+            this.source = source;
         } catch (JSONException e){
             Log.e("Article Object", "ArticleObject: Error Parsing JSON", e);
         }
@@ -31,6 +34,13 @@ class ArticleObject {
 
 
 
+    public String getSource() {
+        return source;
+    }
+
+    public void setSource(String source) {
+        this.source = source;
+    }
 
     public String getAuthor() {
         return author;
