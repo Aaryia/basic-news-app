@@ -5,6 +5,8 @@ import android.util.Log;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Objects;
+
 /**
  * Created by aaryia on 23/11/17.
  */
@@ -21,11 +23,11 @@ class ArticleObject {
 
     ArticleObject(JSONObject jsonObject, String source){
         try{
-            if(jsonObject.getString("author")!=null){author = jsonObject.getString("author");}
-            if(jsonObject.getString("title")!=null){title = jsonObject.getString("title");}
-            if(jsonObject.getString("url")!=null){url = jsonObject.getString("url");}
-            if(jsonObject.getString("urlToImage")!=null){ urlToImage = jsonObject.getString("urlToImage");}
-            if(jsonObject.getString("description")!=null){ description = jsonObject.getString("description");}
+            if(jsonObject.getString("author")!=null&& !Objects.equals(jsonObject.getString("author"), "null")){author = jsonObject.getString("author");}
+            if(jsonObject.getString("title")!=null&& !Objects.equals(jsonObject.getString("title"), "null")){title = jsonObject.getString("title");}
+            if(jsonObject.getString("url")!=null&& !Objects.equals(jsonObject.getString("url"), "null")){url = jsonObject.getString("url");}
+            if(jsonObject.getString("urlToImage")!=null&& !Objects.equals(jsonObject.getString("urlToImage"), "null")){urlToImage = jsonObject.getString("urlToImage");}
+            if(jsonObject.getString("description")!=null&& !Objects.equals(jsonObject.getString("description"), "null")){description = jsonObject.getString("description");}
             this.source = source;
         } catch (JSONException e){
             Log.e("Article Object", "ArticleObject: Error Parsing JSON", e);

@@ -11,7 +11,7 @@ import android.widget.TextView;
  * Created by aaryia on 23/11/17.
  */
 
-public class ArticleViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+public class ArticleViewHolderLeft extends RecyclerView.ViewHolder implements View.OnClickListener {
 
     private static String TAG = "ViewHolder";
     private TextView textView_title;
@@ -19,14 +19,14 @@ public class ArticleViewHolder extends RecyclerView.ViewHolder implements View.O
     private ImageView imageView;
 
     //itemView est la vue correspondante à 1 cellule
-    public ArticleViewHolder(View itemView) {
+    public ArticleViewHolderLeft(View itemView) {
         super(itemView);
 
         //c'est ici que l'on fait nos findView
 
-        textView_title = itemView.findViewById(R.id.article_title);
-        textView_description = itemView.findViewById(R.id.article_description);
-        imageView = itemView.findViewById(R.id.article_image);
+        textView_title = itemView.findViewById(R.id.article_title_l);
+        textView_description = itemView.findViewById(R.id.article_description_l);
+        imageView = itemView.findViewById(R.id.article_image_l);
         itemView.setOnClickListener(this);
     }
 
