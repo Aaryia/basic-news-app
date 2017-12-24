@@ -14,6 +14,7 @@ import com.android.volley.toolbox.Volley;
 import org.json.JSONObject;
 
 import static com.example.aaryia.softnews.ArticleList.addArticleItem;
+import static com.example.aaryia.softnews.ArticleList.deleteArticles;
 import static com.example.aaryia.softnews.SourceList.addItem;
 
 /**
@@ -36,6 +37,11 @@ public class ArticleListActivity extends AppCompatActivity implements ArticleFra
         volleyConnectionArticles(savedInstanceState,news_source);
     }
 
+    @Override
+    protected void onDestroy(){
+        super.onDestroy();
+        deleteArticles();
+    }
 
     @Override
     public void onFragmentInteraction(String id) {

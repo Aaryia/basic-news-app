@@ -28,5 +28,10 @@ public class ArticleList {
     public String toString() {
         return ARTICLES_ITEMS.toString();
     }
+
+    protected static void deleteArticles() {
+        ARTICLES_ITEMS.clear();
+        ARTICLES_ITEM_MAP.clear();
+    }
 }
 
