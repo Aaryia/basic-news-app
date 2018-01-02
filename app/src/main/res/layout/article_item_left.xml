@@ -42,7 +42,6 @@
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/article_title_l"
             app:layout_constraintVertical_bias="0.0"
-            app:srcCompat="@drawable/l_equipe"
             app:layout_constraintRight_toLeftOf="@+id/article_description_l" />
 
         <TextView

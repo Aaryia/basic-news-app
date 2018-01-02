@@ -2,5 +2,6 @@
     <string name="app_name">SoftNews</string>
     <string name="url_sources">https://newsapi.org/v2/sources?apiKey=d31f5fa5f03443dd8a1b9e3fde92ec34&amp;language=fr</string>
     <string name="url_articles">https://newsapi.org/v2/everything?apiKey=d31f5fa5f03443dd8a1b9e3fde92ec34&amp;language=fr&amp;sources=</string>
-
+    <string name="drawer_open">Open navigation drawer</string>
+    <string name="drawer_close">Close navigation drawer</string>
 </resources>

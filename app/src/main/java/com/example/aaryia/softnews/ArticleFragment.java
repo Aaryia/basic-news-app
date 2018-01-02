@@ -2,6 +2,7 @@ package com.example.aaryia.softnews;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -24,6 +25,7 @@ import com.android.volley.toolbox.Volley;
 import org.json.JSONObject;
 
 import static com.example.aaryia.softnews.ArticleList.ARTICLES_ITEMS;
+import static com.example.aaryia.softnews.ArticleList.deleteArticles;
 import static com.example.aaryia.softnews.SourceList.*;
 
     /**
@@ -66,6 +68,13 @@ import static com.example.aaryia.softnews.SourceList.*;
             return view;
         }
 
+        public void onBackPressed() {
+            FragmentManager fm = getActivity().getSupportFragmentManager();
+            fm.popBackStack();
+            return;
+        }
+
+        /*
         @Override
         public void onAttach(Activity activity) {
             super.onAttach(activity);
@@ -78,6 +87,8 @@ import static com.example.aaryia.softnews.SourceList.*;
 
 
         }
+        */
+
         @Override
         public void onDetach() {
             super.onDetach();
@@ -88,28 +99,13 @@ import static com.example.aaryia.softnews.SourceList.*;
             if (null != mListener) {
 // Notify the active callbacks interface (the activity, if the
 // fragment is attached to one) that an item has been selected.
-                mListener.onFragmentInteraction(ITEMS.get(position).id);
+                mListener.onArticleFragmentInteraction(ITEMS.get(position).id);
             }
         }
 
-
-        /**
-         * The default content for this Fragment has a TextView that is shown when
-         * the list is empty. If you would like to change the text, call this method
-         * to supply the text it should use.
-
-         * This interface must be implemented by activities that contain this* fragment to allow an interaction in this fragment to be communicated
-         * to the activity and potentially other fragments contained in that
-         * activity.
-         * <p/>
-         * See the Android Training lesson <a href=
-         * "http://developer.android.com/training/basics/fragments/communicating.html"
-         * >Communicating with Other Fragments</a> for more information.
-         */
-
         public interface OnFragmentInteractionListener {
-            // TODO: Update argument type and name
-            public void onFragmentInteraction(String id);
+            void onArticleFragmentInteraction(String id);
+
         }
     }
 

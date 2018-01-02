@@ -42,8 +42,7 @@
             app:layout_constraintLeft_toRightOf="@+id/article_description"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/article_title"
-            app:layout_constraintVertical_bias="0.0"
-            app:srcCompat="@drawable/l_equipe" />
+            app:layout_constraintVertical_bias="0.0" />
 
         <TextView
             android:id="@+id/article_description"

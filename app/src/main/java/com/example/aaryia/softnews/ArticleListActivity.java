@@ -15,7 +15,7 @@ import org.json.JSONObject;
 
 import static com.example.aaryia.softnews.ArticleList.addArticleItem;
 import static com.example.aaryia.softnews.ArticleList.deleteArticles;
-import static com.example.aaryia.softnews.SourceList.addItem;
+
 
 /**
  * Created by aaryia on 23/11/17.
@@ -40,11 +40,6 @@ public class ArticleListActivity extends AppCompatActivity implements ArticleFra
     @Override
     protected void onDestroy(){
         super.onDestroy();
-        deleteArticles();
-    }
-
-    @Override
-    public void onFragmentInteraction(String id) {
 
     }
 
@@ -53,6 +48,12 @@ public class ArticleListActivity extends AppCompatActivity implements ArticleFra
 
     }
 
+    @Override
+    public void onArticleFragmentInteraction(String id) {
+        //Méthode appelée depuis le fragment
+        Log.i(TAG, "onFragmentInteraction: " + id);
+
+    }
     public void volleyConnectionArticles(final Bundle savedInstanceState, String source){
         //Volley request pour obtenir le JSONObject contenant les sources
         RequestQueue queue = Volley.newRequestQueue(this);

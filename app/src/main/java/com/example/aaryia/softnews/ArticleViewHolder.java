@@ -36,7 +36,7 @@ public class ArticleViewHolder extends RecyclerView.ViewHolder implements View.O
         itemView.setOnClickListener(this);
     }
 
-    //puis ajouter une fonction pour remplir la cellule en fonction d'un SourceObject
+    //puis ajouter une fonction pour remplir la cellule en fonction d'un ArticleObject
 
     public void bind(ArticleObject myObject) {
         textView_title.setText(myObject.getTitle());
@@ -70,10 +70,12 @@ public class ArticleViewHolder extends RecyclerView.ViewHolder implements View.O
             }
         }
     }
+
         @Override
         public void onClick(View view) {
             Log.i(TAG, "onClick: Activated view");
         }
+
     private class DownLoadImageTask extends AsyncTask<String, Void, Bitmap> {
         ImageView imageView;
 

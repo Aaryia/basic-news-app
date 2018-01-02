@@ -1,6 +1,7 @@
 package com.example.aaryia.softnews;
 
 import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -50,7 +51,7 @@ public class SourceFragment extends android.support.v4.app.Fragment implements A
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.i(TAG, "onCreate: Successfully created a SourceFragment ");
-        mAdapter = new SourceAdapter(ITEMS,getContext());
+        mAdapter = new SourceAdapter(ITEMS,getContext(),getActivity());
     }
 
     @Override
@@ -89,27 +90,14 @@ public class SourceFragment extends android.support.v4.app.Fragment implements A
         if (null != mListener) {
 // Notify the active callbacks interface (the activity, if the
 // fragment is attached to one) that an item has been selected.
-            mListener.onFragmentInteraction(ITEMS.get(position).id);
+            mListener.onSourceFragmentInteraction(ITEMS.get(position).id);
         }
     }
 
 
-    /**
-     * The default content for this Fragment has a TextView that is shown when
-     * the list is empty. If you would like to change the text, call this method
-     * to supply the text it should use.
-
-     * This interface must be implemented by activities that contain this* fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
-        public void onFragmentInteraction(String id);
+        void onSourceFragmentInteraction(String id);
+
     }
 }
