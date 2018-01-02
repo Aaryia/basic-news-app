@@ -85,13 +85,11 @@ public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClic
         int itemPosition = getLayoutPosition();
         String source = ITEMS.get(itemPosition).getId();
         volleyConnectionArticles(source);
-        /*
-        Intent myIntent = new Intent(context,ArticleListActivity.class);
-        myIntent.putExtra("source",source);
-        context.startActivity(myIntent);
-        */
+
 
     }
+
+    //Fonction permettant d'aller chercher les articles si et uniquement si l'utilisateur a changé de source
 
     public void volleyConnectionArticles(final String source) {
         //Volley request pour obtenir le JSONObject contenant les sources
