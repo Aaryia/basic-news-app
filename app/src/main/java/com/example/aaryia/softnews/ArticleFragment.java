@@ -3,6 +3,7 @@ package com.example.aaryia.softnews;
 import android.app.Activity;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -44,12 +45,13 @@ import static com.example.aaryia.softnews.SourceList.*;
         //The fragment's ListView/GridView.
         private RecyclerView mListView;
 
-        //The Adapter which will be used to populate the ListView/GridView withViews.
+        //The Adapter which will be used to populate the ListView/GridView with Views.
         private ArticleAdapter mAdapter;
         private SourceDisplayActivity sourceDisplayActivity;
 
-        public ArticleFragment() {
-        }
+
+
+        public ArticleFragment() {}
 
         @Override
         public void onCreate(Bundle savedInstanceState) {
@@ -70,7 +72,7 @@ import static com.example.aaryia.softnews.SourceList.*;
             mListView.setLayoutManager(new LinearLayoutManager(this.getContext()));
 
 
-            mAdapter = new ArticleAdapter(ARTICLES_ITEMS,mListView);
+            mAdapter = new ArticleAdapter(ARTICLES_ITEMS,mListView, this.getActivity());
 
             mAdapter.setOnLoadMoreListener(new ArticleAdapter.OnLoadMoreListener() {
                 @Override
@@ -92,11 +94,6 @@ import static com.example.aaryia.softnews.SourceList.*;
 
             mListView.setAdapter(mAdapter);
             return view;
-        }
-
-        public void onBackPressed() {
-            FragmentManager fm = getActivity().getSupportFragmentManager();
-            fm.popBackStack();
         }
 
         public void volleyArticleNextPage(){

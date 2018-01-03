@@ -3,6 +3,7 @@ package com.example.aaryia.softnews;
 
 import android.content.Context;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -27,7 +28,8 @@ public class SourceDisplayActivity extends AppCompatActivity implements SourceFr
 
     private JSONObject jsonObject = null;
     String TAG = "SourceDisplayActivity";
-    Context contextMain;
+    public boolean isDrawerOpen = false;
+
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -51,6 +53,49 @@ public class SourceDisplayActivity extends AppCompatActivity implements SourceFr
         Log.i(TAG, "onFragmentInteraction: " + id);
 
     }
+
+    public void onBackPressed(){
+
+        FragmentManager fm = getSupportFragmentManager();
+        
+        
+        if (fm.getBackStackEntryCount() > 0) {
+            
+            if(fm.findFragmentByTag("Article")!=null&&fm.findFragmentByTag("Article").isVisible()) {
+                
+                if (fm.findFragmentByTag("Source") != null) {
+                    fm.beginTransaction().replace(R.id.container, fm.findFragmentByTag("Source"), "Source").commit();
+                    setCanDrawerOpen(false);
+                } else {
+                    Log.d(TAG, "onBackPressed: aucun fragment nommé source");
+                }
+
+            } else if(fm.findFragmentByTag("Article_Full")!=null && fm.findFragmentByTag("Article_Full").isVisible()) {
+                fm.beginTransaction().replace(R.id.container, fm.findFragmentByTag("Article"), "Article").commit();
+            }
+
+            if(fm.findFragmentByTag("Source")!=null && fm.findFragmentByTag("Source").isVisible()){
+                android.os.Process.killProcess(android.os.Process.myPid());
+            }
+        }
+
+
+    }
+
+
+
+    //Méthode permettant de définir si le Drawer peut s'ouvrir ou non
+    public void setCanDrawerOpen(boolean b){
+
+        DrawerLayout mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+
+        if(b){
+            mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+        } else {
+            mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+        }
+    }
+
 
 
 
@@ -81,21 +126,26 @@ public class SourceDisplayActivity extends AppCompatActivity implements SourceFr
                     /** Called when a drawer has settled in a completely open state. */
                     public void onDrawerOpened(View drawerView) {
                         super.onDrawerOpened(drawerView);
+                        isDrawerOpen = true;
                         invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
                         SourceFragment sourceFragment = new SourceFragment();
+                        Bundle bundle = new Bundle();
+                        bundle.putInt("isDrawer",1);
+                        sourceFragment.setArguments(bundle);
                         getSupportFragmentManager().beginTransaction()
-                                .add(R.id.navigation, sourceFragment)
+                                .add(R.id.navigation, sourceFragment,"Source_drawer")
                                 .commit();
                     }
                 };
 
                 // Set the drawer toggle as the DrawerListener
                 mDrawerLayout.setDrawerListener(mDrawerToggle);
+                mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
 
 
                 if (savedInstanceState == null) {
                     getSupportFragmentManager().beginTransaction()
-                            .add(R.id.container, sourceFragment)
+                            .add(R.id.container, sourceFragment,"Source")
                             .commit();
                 }
 

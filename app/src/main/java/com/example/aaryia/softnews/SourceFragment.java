@@ -36,12 +36,14 @@ public class SourceFragment extends android.support.v4.app.Fragment implements A
 
     private View view = null;
     private OnFragmentInteractionListener mListener;
+    private boolean isDrawer = false;
 
      //The fragment's ListView/GridView.
      private RecyclerView mListView;
 
      //The Adapter which will be used to populate the ListView/GridView withViews.
      private SourceAdapter mAdapter;
+
 
 
     public SourceFragment() {
@@ -51,7 +53,14 @@ public class SourceFragment extends android.support.v4.app.Fragment implements A
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.i(TAG, "onCreate: Successfully created a SourceFragment ");
-        mAdapter = new SourceAdapter(ITEMS,getContext(),getActivity());
+        if(getArguments()!=null){
+            if(getArguments().get("isDrawer")!=null&&getArguments().get("isDrawer").equals(1)){
+                    isDrawer=true;
+                Log.d(TAG, "onCreate: Je suis un drawer");
+            }
+        }
+
+        mAdapter = new SourceAdapter(ITEMS,getContext(),getActivity(),isDrawer);
     }
 
     @Override

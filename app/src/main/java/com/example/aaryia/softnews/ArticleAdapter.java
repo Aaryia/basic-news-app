@@ -4,6 +4,7 @@ package com.example.aaryia.softnews;
  * Created by aaryia on 23/11/17.
  */
 
+import android.content.Context;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Layout;
@@ -24,6 +25,7 @@ class ArticleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private final int LEFT = 0, RIGHT = 1, PROGRESS = 2;
     private boolean loading;
     private OnLoadMoreListener onLoadMoreListener;
+    Context contextMain;
 
     //Les entiers nécessaires à la mise en place de la progress bar
     private int visibleThreshold = 2;
@@ -41,8 +43,9 @@ class ArticleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     //ajouter un constructeur prenant en entrée une liste
-    public ArticleAdapter(List<ArticleObject> list, RecyclerView recyclerView) {
+    public ArticleAdapter(List<ArticleObject> list, RecyclerView recyclerView, Context contextMain) {
         this.list = list;
+        this.contextMain = contextMain;
 
         Log.d(TAG, "ArticleAdapter: "+recyclerView.getLayoutManager().toString());
 
@@ -93,10 +96,10 @@ class ArticleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         if (itemType != PROGRESS) {
             if (itemType % 2 == RIGHT) {
                 View v1 = inflater.inflate(R.layout.article_item_right, viewGroup, false);
-                viewHolder = new ArticleViewHolder(v1);
+                viewHolder = new ArticleViewHolder(v1, contextMain);
             } else {
                 View v2 = inflater.inflate(R.layout.article_item_left, viewGroup, false);
-                viewHolder = new ArticleViewHolderLeft(v2);
+                viewHolder = new ArticleViewHolderLeft(v2, contextMain);
             }
         } else {
             View v3 = inflater.inflate(R.layout.progress_bar,viewGroup,false);

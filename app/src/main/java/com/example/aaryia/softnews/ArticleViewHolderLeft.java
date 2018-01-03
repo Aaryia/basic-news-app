@@ -1,8 +1,10 @@
 package com.example.aaryia.softnews;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
@@ -11,6 +13,8 @@ import android.widget.TextView;
 
 import java.io.InputStream;
 import java.net.URL;
+
+import static com.example.aaryia.softnews.ArticleList.ARTICLES_ITEMS;
 
 
 /**
@@ -21,18 +25,18 @@ public class ArticleViewHolderLeft extends RecyclerView.ViewHolder implements Vi
 
     private static String TAG = "ViewHolder";
     private TextView textView_title;
-    private TextView textView_description;
     private ImageView imageView;
+    private SourceDisplayActivity sourceDisplayActivity;
 
     //itemView est la vue correspondante à 1 cellule
-    public ArticleViewHolderLeft(View itemView) {
+    public ArticleViewHolderLeft(View itemView, Context contextMain) {
         super(itemView);
 
         //c'est ici que l'on fait nos findView
 
         textView_title = itemView.findViewById(R.id.article_title_l);
-        textView_description = itemView.findViewById(R.id.article_description_l);
         imageView = itemView.findViewById(R.id.article_image_l);
+        this.sourceDisplayActivity = (SourceDisplayActivity) contextMain;
         itemView.setOnClickListener(this);
     }
 
@@ -40,7 +44,6 @@ public class ArticleViewHolderLeft extends RecyclerView.ViewHolder implements Vi
 
     public void bind(ArticleObject myObject) {
         textView_title.setText(myObject.getTitle());
-        textView_description.setText(myObject.getDescription());
         if (myObject.getUrlToImage() != null && !myObject.getUrlToImage().isEmpty() && myObject.getUrlToImage() != "null") {
             Log.d(TAG, "bind: " + myObject.getUrlToImage());
             new DownLoadImageTask(imageView).execute(myObject.getUrlToImage());
@@ -72,7 +75,17 @@ public class ArticleViewHolderLeft extends RecyclerView.ViewHolder implements Vi
 
     @Override
     public void onClick(View view) {
-        Log.i(TAG, "onClick: Activated view");
+        Log.i(TAG, "onClick: Activated view = "+ARTICLES_ITEMS.get(getLayoutPosition()).getTitle());
+        int itemPosition = getLayoutPosition();
+        Bundle bundle = new Bundle();
+        bundle.putInt("position",itemPosition);
+        ArticleFullFragment articleFullFragment = new ArticleFullFragment();
+        articleFullFragment.setArguments(bundle);
+        sourceDisplayActivity.getSupportFragmentManager().beginTransaction()
+                .replace(R.id.container, articleFullFragment,"Article_Full")
+                .addToBackStack(null)
+                .commit();
+
     }
 
 

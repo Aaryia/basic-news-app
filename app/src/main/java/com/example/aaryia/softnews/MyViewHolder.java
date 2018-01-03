@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
@@ -84,9 +85,13 @@ public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClic
         Log.i(TAG, "onClick: Activated view = "+ITEMS.get(getLayoutPosition()).getName());
         int itemPosition = getLayoutPosition();
         String source = ITEMS.get(itemPosition).getId();
+
+        if(sourceDisplayActivity.isDrawerOpen){
+            DrawerLayout mDrawerLayout = (DrawerLayout) sourceDisplayActivity.findViewById(R.id.drawer_layout);
+            mDrawerLayout.closeDrawers();
+        }
+
         volleyConnectionArticles(source);
-
-
     }
 
     //Fonction permettant d'aller chercher les articles si et uniquement si l'utilisateur a changé de source
@@ -95,13 +100,21 @@ public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClic
         //Volley request pour obtenir le JSONObject contenant les sources
         RequestQueue queue = Volley.newRequestQueue(sourceDisplayActivity);
         String url = sourceDisplayActivity.getString(R.string.url_articles) + source;
+        sourceDisplayActivity.setCanDrawerOpen(true);
 
         if (!(ARTICLES_ITEMS.isEmpty()) && ARTICLES_ITEMS.get(0).getSource() == source) {
             ArticleFragment articleFragment = new ArticleFragment();
-            sourceDisplayActivity.getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.container, articleFragment)
-                    .addToBackStack(null)
-                    .commit();
+
+            if(sourceDisplayActivity.getSupportFragmentManager().findFragmentByTag("Article")!=null && sourceDisplayActivity.getSupportFragmentManager().findFragmentByTag("Article").isAdded()){
+                sourceDisplayActivity.getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.container, articleFragment)
+                        .commit();
+            } else {
+                sourceDisplayActivity.getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.container, articleFragment,"Article")
+                        .addToBackStack(null)
+                        .commit();
+            }
         } else {
             deleteArticles();
             JsonObjectRequest jsObjectRequest = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
@@ -121,9 +134,10 @@ public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClic
 
                             ArticleFragment articleFragment = new ArticleFragment();
                             sourceDisplayActivity.getSupportFragmentManager().beginTransaction()
-                                    .replace(R.id.container, articleFragment)
+                                    .replace(R.id.container, articleFragment,"Article")
                                     .addToBackStack(null)
                                     .commit();
+
                         } catch (Exception e) {
                             Log.e(TAG, "onAttach: Error thrown while JSON parsing", e);
                         }
