@@ -78,9 +78,6 @@ import static com.example.aaryia.softnews.SourceList.*;
                     //add null , so the adapter will check view_type and show progress bar at bottom
                     ARTICLES_ITEMS.add(null);
                     mAdapter.notifyItemInserted(ARTICLES_ITEMS.size() - 1);
-
-                    //TODO: volley à implémenter
-
                     handler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
