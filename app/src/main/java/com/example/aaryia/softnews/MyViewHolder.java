@@ -2,6 +2,7 @@ package com.example.aaryia.softnews;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.provider.ContactsContract;
@@ -36,7 +37,6 @@ import static com.example.aaryia.softnews.SourceList.ITEMS;
 public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
     private static String TAG = "ViewHolder";
-    private TextView textView;
     private ImageView imageView;
     Context context;
     SourceDisplayActivity sourceDisplayActivity;
@@ -49,7 +49,6 @@ public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClic
 
         //c'est ici que l'on fait nos findView
 
-        textView = (TextView) itemView.findViewById(R.id.textView_sources);
         imageView = (ImageView) itemView.findViewById(R.id.imageViewSource);
         itemView.setOnClickListener(this);
     }
@@ -57,7 +56,7 @@ public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClic
     //puis ajouter une fonction pour remplir la cellule en fonction d'un SourceObject
 
     public void bind(SourceObject myObject){
-        textView.setText(myObject.getName());
+
         switch(myObject.getId()) {
             case "google-news-fr":
                 imageView.setImageResource(R.drawable.google_logo);
@@ -84,6 +83,7 @@ public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClic
     public void onClick(View view) {
         Log.i(TAG, "onClick: Activated view = "+ITEMS.get(getLayoutPosition()).getName());
         int itemPosition = getLayoutPosition();
+
         String source = ITEMS.get(itemPosition).getId();
 
         if(sourceDisplayActivity.isDrawerOpen){

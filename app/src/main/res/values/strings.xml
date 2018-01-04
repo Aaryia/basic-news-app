@@ -6,4 +6,5 @@
     <string name="drawer_close">Close navigation drawer</string>
     <string name="button">Lire l\'article</string>
     <string name="title_activity_web_view">WebView</string>
+    <string name="last_sources">no source</string>
 </resources>

@@ -1,9 +1,11 @@
 package com.example.aaryia.softnews;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.DataSetObserver;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -107,6 +109,7 @@ class SourceAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         private static final String TAG = "SourceDrawerViewHolder" ;
         public TextView source;
+        public CardView cardView;
 
 
 
@@ -118,7 +121,7 @@ class SourceAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         public void bind(SourceObject myObject) {
             source.setText(myObject.getName());
-            }
+        }
 
 
         public void onClick(View view) {

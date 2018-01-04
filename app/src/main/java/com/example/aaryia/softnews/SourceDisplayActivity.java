@@ -2,6 +2,7 @@ package com.example.aaryia.softnews;
 
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentManager;
@@ -10,6 +11,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
@@ -29,6 +31,8 @@ public class SourceDisplayActivity extends AppCompatActivity implements SourceFr
     private JSONObject jsonObject = null;
     String TAG = "SourceDisplayActivity";
     public boolean isDrawerOpen = false;
+    private DrawerLayout mDrawerLayout;
+    private ActionBarDrawerToggle mDrawerToggle;
 
 
     @Override
@@ -54,6 +58,21 @@ public class SourceDisplayActivity extends AppCompatActivity implements SourceFr
 
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        // Activate the navigation drawer toggle
+        if (mDrawerToggle.onOptionsItemSelected(item)) {
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
     public void onBackPressed(){
 
         FragmentManager fm = getSupportFragmentManager();
@@ -68,6 +87,11 @@ public class SourceDisplayActivity extends AppCompatActivity implements SourceFr
                     setCanDrawerOpen(false);
                 } else {
                     Log.d(TAG, "onBackPressed: aucun fragment nommé source");
+                }
+
+                if(getSupportActionBar()!=null) {
+                    getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+                    getSupportActionBar().setHomeButtonEnabled(false);
                 }
 
             } else if(fm.findFragmentByTag("Article_Full")!=null && fm.findFragmentByTag("Article_Full").isVisible()) {
@@ -87,7 +111,7 @@ public class SourceDisplayActivity extends AppCompatActivity implements SourceFr
     //Méthode permettant de définir si le Drawer peut s'ouvrir ou non
     public void setCanDrawerOpen(boolean b){
 
-        DrawerLayout mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 
         if(b){
             mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
@@ -113,8 +137,8 @@ public class SourceDisplayActivity extends AppCompatActivity implements SourceFr
                 SourceFragment sourceFragment = new SourceFragment();
                 setContentView(R.layout.activity_source_display);
 
-                DrawerLayout mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-                ActionBarDrawerToggle mDrawerToggle = new ActionBarDrawerToggle(currentActivity, mDrawerLayout,
+                mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+                mDrawerToggle = new ActionBarDrawerToggle(currentActivity, mDrawerLayout,
                         R.string.drawer_open, R.string.drawer_close) {
 
                     /** Called when a drawer has settled in a completely closed state. */
@@ -141,6 +165,7 @@ public class SourceDisplayActivity extends AppCompatActivity implements SourceFr
                 // Set the drawer toggle as the DrawerListener
                 mDrawerLayout.setDrawerListener(mDrawerToggle);
                 mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+                mDrawerToggle.syncState();
 
 
                 if (savedInstanceState == null) {
@@ -175,6 +200,12 @@ public class SourceDisplayActivity extends AppCompatActivity implements SourceFr
         });
         // Ajoute la requête à la RequestQueue pour obtenir le JSON approprié
         queue.add(jsObjectRequest);
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        mDrawerToggle.onConfigurationChanged(newConfig);
     }
 
 }

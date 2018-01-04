@@ -5,6 +5,7 @@ package com.example.aaryia.softnews;
  */
 
 import android.content.Context;
+import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Layout;
@@ -46,6 +47,14 @@ class ArticleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public ArticleAdapter(List<ArticleObject> list, RecyclerView recyclerView, Context contextMain) {
         this.list = list;
         this.contextMain = contextMain;
+        SourceDisplayActivity sourceDisplayActivity = (SourceDisplayActivity) contextMain;
+
+        if (sourceDisplayActivity.getSupportActionBar() != null) {
+            sourceDisplayActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            sourceDisplayActivity.getSupportActionBar().setDisplayShowHomeEnabled(true);
+        } else {
+            Snackbar.make(sourceDisplayActivity.findViewById(R.id.parent),"Hey I have no toolbar",Snackbar.LENGTH_LONG).show();
+        }
 
         Log.d(TAG, "ArticleAdapter: "+recyclerView.getLayoutManager().toString());
 

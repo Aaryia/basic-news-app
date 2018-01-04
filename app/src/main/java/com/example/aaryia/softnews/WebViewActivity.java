@@ -18,6 +18,9 @@ public class WebViewActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.content_web_view);
 
+        Toolbar toolbar = (Toolbar) findViewById(R.id.webview_toolbar);
+        setSupportActionBar(toolbar);
+
         webView = (WebView)findViewById(R.id.webview);
 
         if(getIntent().hasExtra("url")){
@@ -31,6 +34,18 @@ public class WebViewActivity extends AppCompatActivity {
         } else {
             this.finish();
         }
+
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
+        } else {
+            Snackbar.make(findViewById(R.id.webview),"Hey I have no toolbar",Snackbar.LENGTH_LONG).show();
+        }
     }
 
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
+    }
 }
