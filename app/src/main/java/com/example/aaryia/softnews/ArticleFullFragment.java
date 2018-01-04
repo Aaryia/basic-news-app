@@ -21,7 +21,7 @@ public class ArticleFullFragment extends android.support.v4.app.Fragment {
     private int articlePosition;
 
     //The fragment's ListView/GridView.
-    private RecyclerView mListView;
+    private RecyclerView recyclerView;
 
     //The Adapter which will be used to populate the ListView/GridView with Views.
     private ArticleFullAdapter mAdapter;
@@ -42,13 +42,13 @@ public class ArticleFullFragment extends android.support.v4.app.Fragment {
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
         view = inflater.inflate(R.layout.fragment,container,false);
+        view.setOverScrollMode(View.OVER_SCROLL_NEVER);
+        recyclerView = view.findViewById(R.id.recycler);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this.getContext()));
 
-        mListView = view.findViewById(R.id.recycler);
-        mListView.setLayoutManager(new LinearLayoutManager(this.getContext()));
+        mAdapter = new ArticleFullAdapter(ARTICLES_ITEMS.get(articlePosition),getContext());
 
-        mAdapter = new ArticleFullAdapter(ARTICLES_ITEMS.get(articlePosition));
-
-        mListView.setAdapter(mAdapter);
+        recyclerView.setAdapter(mAdapter);
         return view;
 
     }

@@ -1,20 +1,28 @@
 package com.example.aaryia.softnews;
 
+import android.bluetooth.BluetoothClass;
+import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.support.v7.widget.RecyclerView;
-import android.text.Layout;
 import android.util.Log;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.webkit.WebChromeClient;
+import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.io.InputStream;
 import java.net.URL;
+
+import javax.xml.transform.Source;
 
 /**
  * Created by aaryia on 03/01/18.
@@ -24,9 +32,11 @@ public class ArticleFullAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     private static final String TAG = "Article Full Adapter :";
     ArticleObject article;
+    SourceDisplayActivity sourceDisplayActivity;
 
-    public ArticleFullAdapter(ArticleObject articleObject){
+    public ArticleFullAdapter(ArticleObject articleObject, Context context){
         this.article = articleObject;
+        sourceDisplayActivity = (SourceDisplayActivity) context;
     }
 
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int position){
@@ -34,7 +44,7 @@ public class ArticleFullAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         LayoutInflater inflater = LayoutInflater.from(viewGroup.getContext());
 
         View v = inflater.inflate(R.layout.article_view_full,viewGroup,false);
-        viewHolder = new ArticleFullViewHolder(v);
+        viewHolder = new ArticleFullViewHolder(v, sourceDisplayActivity);
         return viewHolder;
     }
 
@@ -47,6 +57,8 @@ public class ArticleFullAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         return 1;
     }
 
+
+
     private class ArticleFullViewHolder extends RecyclerView.ViewHolder {
 
         public TextView title;
@@ -54,25 +66,40 @@ public class ArticleFullAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         public TextView credits;
         public ImageView image;
         public Button button;
+        public WebView webView;
+        public SourceDisplayActivity sourceDisplayActivity;
 
 
-        public ArticleFullViewHolder(View v) {
+        public ArticleFullViewHolder(View v, SourceDisplayActivity sourceDisplayActivity) {
             super(v);
+            v.setOverScrollMode(View.OVER_SCROLL_NEVER);
             title = v.findViewById(R.id.article_title);
             description = v.findViewById(R.id.article_description);
             credits = v.findViewById(R.id.article_credits);
             image = v.findViewById(R.id.article_image);
             button = v.findViewById(R.id.button);
+            this.sourceDisplayActivity = sourceDisplayActivity;
         }
 
         public void bind(ArticleObject myObject) {
             title.setText(myObject.getTitle());
             description.setText(myObject.getDescription());
             credits.setText("Auteur : " + myObject.getAuthor() + " | Source : " + myObject.getSource());
+
+
             if (myObject.getUrlToImage() != null && !myObject.getUrlToImage().isEmpty() && myObject.getUrlToImage() != "null") {
                 Log.d(TAG, "bind: " + myObject.getUrlToImage());
                 new DownLoadImageTask(image).execute(myObject.getUrlToImage());
             }
+
+            button.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(sourceDisplayActivity,WebViewActivity.class);
+                    intent.putExtra("url",article.getUrl());
+                    sourceDisplayActivity.startActivity(intent);
+                }
+            });
         }
 
     }

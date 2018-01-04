@@ -4,4 +4,6 @@
     <string name="url_articles">https://newsapi.org/v2/everything?apiKey=d31f5fa5f03443dd8a1b9e3fde92ec34&amp;language=fr&amp;sources=</string>
     <string name="drawer_open">Open navigation drawer</string>
     <string name="drawer_close">Close navigation drawer</string>
+    <string name="button">Lire l\'article</string>
+    <string name="title_activity_web_view">WebView</string>
 </resources>
