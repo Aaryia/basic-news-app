@@ -41,11 +41,11 @@ class SourceAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     List<SourceObject> list;
     Context context;
     Context contextMain;
-    private boolean isDrawer=false;
+    private boolean isDrawer = false;
     private final int DRAWER = 1, NOT_DRAWER = 0;
 
     //ajouter un constructeur prenant en entrée une liste
-    public SourceAdapter(List<SourceObject> list, Context context,Context contextMain,boolean isDrawer) {
+    public SourceAdapter(List<SourceObject> list, Context context, Context contextMain, boolean isDrawer) {
         this.list = list;
         this.context = context;
         this.contextMain = contextMain;
@@ -54,7 +54,7 @@ class SourceAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     @Override
     public int getItemViewType(int position) {
-        if(isDrawer){
+        if (isDrawer) {
             return DRAWER;
         } else {
             return NOT_DRAWER;
@@ -68,10 +68,10 @@ class SourceAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         RecyclerView.ViewHolder viewHolder;
         LayoutInflater inflater = LayoutInflater.from(viewGroup.getContext());
 
-        switch(itemType) {
+        switch (itemType) {
             case DRAWER:
-                View v1 = inflater.inflate(R.layout.fragment_item_drawer,viewGroup,false);
-                viewHolder =  new SourceDrawerViewHolder(v1);
+                View v1 = inflater.inflate(R.layout.fragment_item_drawer, viewGroup, false);
+                viewHolder = new SourceDrawerViewHolder(v1);
                 break;
 
             case NOT_DRAWER:
@@ -89,7 +89,7 @@ class SourceAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder myViewHolder, int position) {
         SourceObject myObject = list.get(position);
-        switch(myViewHolder.getItemViewType()) {
+        switch (myViewHolder.getItemViewType()) {
             case DRAWER:
                 SourceDrawerViewHolder vh1 = (SourceDrawerViewHolder) myViewHolder;
                 vh1.bind(myObject);
@@ -107,10 +107,9 @@ class SourceAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private class SourceDrawerViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        private static final String TAG = "SourceDrawerViewHolder" ;
+        private static final String TAG = "SourceDrawerViewHolder";
         public TextView source;
         public CardView cardView;
-
 
 
         public SourceDrawerViewHolder(View v) {
@@ -126,84 +125,18 @@ class SourceAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         public void onClick(View view) {
             SourceDisplayActivity sourceDisplayActivity = (SourceDisplayActivity) contextMain;
-            Log.i(TAG, "onClick: Activated view = "+ITEMS.get(getLayoutPosition()).getName());
+            Log.i(TAG, "onClick: Activated view = " + ITEMS.get(getLayoutPosition()).getName());
             int itemPosition = getLayoutPosition();
             String source = ITEMS.get(itemPosition).getId();
 
-            if(sourceDisplayActivity.isDrawerOpen){
+            if (sourceDisplayActivity.isDrawerOpen) {
                 DrawerLayout mDrawerLayout = (DrawerLayout) sourceDisplayActivity.findViewById(R.id.drawer_layout);
                 mDrawerLayout.closeDrawers();
             }
 
-            volleyConnectionArticles(source);
-        }
-
-        //Fonction permettant d'aller chercher les articles si et uniquement si l'utilisateur a changé de source
-
-        public void volleyConnectionArticles(final String source) {
-
-            final SourceDisplayActivity sourceDisplayActivity = (SourceDisplayActivity) contextMain;
-            //Volley request pour obtenir le JSONObject contenant les sources
-            RequestQueue queue = Volley.newRequestQueue(sourceDisplayActivity);
-            String url = sourceDisplayActivity.getString(R.string.url_articles) + source;
-            sourceDisplayActivity.setCanDrawerOpen(true);
-
-            if (!(ARTICLES_ITEMS.isEmpty()) && ARTICLES_ITEMS.get(0).getSource() == source) {
-                ArticleFragment articleFragment = new ArticleFragment();
-
-                if(sourceDisplayActivity.getSupportFragmentManager().findFragmentByTag("Article")!=null && sourceDisplayActivity.getSupportFragmentManager().findFragmentByTag("Article").isAdded()){
-                    sourceDisplayActivity.getSupportFragmentManager().beginTransaction()
-                            .replace(R.id.container, articleFragment)
-                            .commit();
-                } else {
-                    sourceDisplayActivity.getSupportFragmentManager().beginTransaction()
-                            .replace(R.id.container, articleFragment,"Article")
-                            .addToBackStack(null)
-                            .commit();
-                }
-            } else {
-                deleteArticles();
-                JsonObjectRequest jsObjectRequest = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        JSONObject jsonObject = response;
-                        Log.i(TAG, "onResponse: " + String.valueOf(jsonObject));
-
-                        if (jsonObject != null) {
-                            try {
-                                for (int i = 0; i < jsonObject.getJSONArray("articles").length(); i++) {
-
-                                    Log.i(TAG, "onCreateView: " + jsonObject.getJSONArray("articles").getJSONObject(i).getString("title"));
-                                    //Puts all the sources in a sourceList.
-                                    addArticleItem(new ArticleObject(jsonObject.getJSONArray("articles").getJSONObject(i), source));
-                                }
-
-                                ArticleFragment articleFragment = new ArticleFragment();
-                                sourceDisplayActivity.getSupportFragmentManager().beginTransaction()
-                                        .replace(R.id.container, articleFragment,"Article")
-                                        .addToBackStack(null)
-                                        .commit();
-
-                            } catch (Exception e) {
-                                Log.e(TAG, "onAttach: Error thrown while JSON parsing", e);
-                            }
-                        } else {
-                            Log.i(TAG, "onCreateView: JSON Object is null");
-                        }
-                    }
-
-                }, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Log.e(TAG, "onErrorResponse: we got a problem", error);
-                    }
-                });
-                // Ajoute la requête à la RequestQueue pour obtenir le JSON approprié
-                queue.add(jsObjectRequest);
-
-            }
-        }
+            sourceDisplayActivity.volleyConnectionArticles(source);
         }
 
     }
 
+}

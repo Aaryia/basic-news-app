@@ -36,10 +36,10 @@ import static com.example.aaryia.softnews.SourceList.ITEMS;
 
 public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
-    private static String TAG = "ViewHolder";
+    private String TAG = "ViewHolder";
     private ImageView imageView;
-    Context context;
-    SourceDisplayActivity sourceDisplayActivity;
+    private Context context;
+    private SourceDisplayActivity sourceDisplayActivity;
 
     //itemView est la vue correspondante à 1 cellule
     public MyViewHolder(View itemView,Context context,Context contextMain) {
@@ -48,8 +48,7 @@ public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClic
         sourceDisplayActivity = (SourceDisplayActivity) contextMain;
 
         //c'est ici que l'on fait nos findView
-
-        imageView = (ImageView) itemView.findViewById(R.id.imageViewSource);
+        imageView = itemView.findViewById(R.id.imageViewSource);
         itemView.setOnClickListener(this);
     }
 
@@ -91,70 +90,6 @@ public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClic
             mDrawerLayout.closeDrawers();
         }
 
-        volleyConnectionArticles(source);
-    }
-
-    //Fonction permettant d'aller chercher les articles si et uniquement si l'utilisateur a changé de source
-
-    public void volleyConnectionArticles(final String source) {
-        //Volley request pour obtenir le JSONObject contenant les sources
-        RequestQueue queue = Volley.newRequestQueue(sourceDisplayActivity);
-        String url = sourceDisplayActivity.getString(R.string.url_articles) + source;
-        sourceDisplayActivity.setCanDrawerOpen(true);
-
-        if (!(ARTICLES_ITEMS.isEmpty()) && ARTICLES_ITEMS.get(0).getSource() == source) {
-            ArticleFragment articleFragment = new ArticleFragment();
-
-            if(sourceDisplayActivity.getSupportFragmentManager().findFragmentByTag("Article")!=null && sourceDisplayActivity.getSupportFragmentManager().findFragmentByTag("Article").isAdded()){
-                sourceDisplayActivity.getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.container, articleFragment)
-                        .commit();
-            } else {
-                sourceDisplayActivity.getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.container, articleFragment,"Article")
-                        .addToBackStack(null)
-                        .commit();
-            }
-        } else {
-            deleteArticles();
-            JsonObjectRequest jsObjectRequest = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
-                @Override
-                public void onResponse(JSONObject response) {
-                    JSONObject jsonObject = response;
-                    Log.i(TAG, "onResponse: " + String.valueOf(jsonObject));
-
-                    if (jsonObject != null) {
-                        try {
-                            for (int i = 0; i < jsonObject.getJSONArray("articles").length(); i++) {
-
-                                Log.i(TAG, "onCreateView: " + jsonObject.getJSONArray("articles").getJSONObject(i).getString("title"));
-                                //Puts all the sources in a sourceList.
-                                addArticleItem(new ArticleObject(jsonObject.getJSONArray("articles").getJSONObject(i), source));
-                            }
-
-                            ArticleFragment articleFragment = new ArticleFragment();
-                            sourceDisplayActivity.getSupportFragmentManager().beginTransaction()
-                                    .replace(R.id.container, articleFragment,"Article")
-                                    .addToBackStack(null)
-                                    .commit();
-
-                        } catch (Exception e) {
-                            Log.e(TAG, "onAttach: Error thrown while JSON parsing", e);
-                        }
-                    } else {
-                        Log.i(TAG, "onCreateView: JSON Object is null");
-                    }
-                }
-
-            }, new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    Log.e(TAG, "onErrorResponse: we got a problem", error);
-                }
-            });
-            // Ajoute la requête à la RequestQueue pour obtenir le JSON approprié
-            queue.add(jsObjectRequest);
-
-        }
+        sourceDisplayActivity.volleyConnectionArticles(source);
     }
 }
