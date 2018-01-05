@@ -1,9 +1,6 @@
 package com.example.aaryia.softnews;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -11,19 +8,16 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import java.io.InputStream;
-import java.net.URL;
-
-import javax.xml.transform.Source;
-
 import static com.example.aaryia.softnews.ArticleList.ARTICLES_ITEMS;
 
 
 /**
  * Created by aaryia on 23/11/17.
+ * SoftNews web APP for lectures
+ * Centrale Marseille 2017-2018
  */
 
-public class ArticleViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+class ArticleViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
     private static String TAG = "ViewHolder";
     private TextView textView_title;
@@ -32,7 +26,7 @@ public class ArticleViewHolder extends RecyclerView.ViewHolder implements View.O
 
     //itemView est la vue correspondante à 1 cellule
 
-    public ArticleViewHolder(View itemView,Context contextMain) {
+    ArticleViewHolder(View itemView, Context contextMain) {
         super(itemView);
 
         //c'est ici que l'on fait nos findView
@@ -45,11 +39,10 @@ public class ArticleViewHolder extends RecyclerView.ViewHolder implements View.O
 
     //puis ajouter une fonction pour remplir la cellule en fonction d'un ArticleObject
 
-    public void bind(ArticleObject myObject) {
+    void bind(ArticleObject myObject) {
         textView_title.setText(myObject.getTitle());
-        if (myObject.getUrlToImage() != null && !myObject.getUrlToImage().isEmpty() && myObject.getUrlToImage() != "null"){
-            Log.d(TAG, "bind: " + myObject.getUrlToImage());
-        new DownLoadImageTask(imageView).execute(myObject.getUrlToImage());
+        if (myObject.getDrawable()!=null&&myObject.getDrawable().getDrawable()!=null){
+            imageView.setImageDrawable(myObject.getDrawable().getDrawable());
         } else {
 
             Log.d(TAG, "bind: " + myObject.getSource());
@@ -91,41 +84,5 @@ public class ArticleViewHolder extends RecyclerView.ViewHolder implements View.O
                     .commit();
 
         }
-
-    private class DownLoadImageTask extends AsyncTask<String, Void, Bitmap> {
-        ImageView imageView;
-
-        public DownLoadImageTask(ImageView imageView) {
-            this.imageView = imageView;
-        }
-
-        /*
-            doInBackground(Params... params)
-                Override this method to perform a computation on a background thread.
-         */
-        protected Bitmap doInBackground(String... urls) {
-            String urlOfImage = urls[0];
-            Bitmap logo = null;
-            try {
-                InputStream is = new URL(urlOfImage).openStream();
-                /*
-                    decodeStream(InputStream is)
-                        Decode an input stream into a bitmap.
-                 */
-                logo = BitmapFactory.decodeStream(is);
-            } catch (Exception e) { // Catch the download exception
-                e.printStackTrace();
-            }
-            return logo;
-        }
-
-        /*
-            onPostExecute(Result result)
-                Runs on the UI thread after doInBackground(Params...).
-         */
-        protected void onPostExecute(Bitmap result) {
-            imageView.setImageBitmap(result);
-        }
-    }
 
 }

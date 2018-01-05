@@ -12,6 +12,8 @@ import static com.example.aaryia.softnews.ArticleList.ARTICLES_ITEMS;
 
 /**
  * Created by aaryia on 02/01/18.
+ * SoftNews web APP for lectures
+ * Centrale Marseille 2017-2018
  */
 
 public class ArticleFullFragment extends android.support.v4.app.Fragment {

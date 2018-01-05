@@ -1,7 +1,6 @@
 package com.example.aaryia.softnews;
 
 import android.app.Activity;
-import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -11,24 +10,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ListAdapter;
-import android.widget.TextView;
-
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
-
-import org.json.JSONObject;
 
 import static com.android.volley.VolleyLog.TAG;
 import static com.example.aaryia.softnews.SourceList.*;
 
 /**
- * Created by aaryia on 22/11/17.
+ * Created by Martin BABEAU on 22/11/17.
+ * SoftNews web APP for lectures
+ * Centrale Marseille 2017-2018
  */
 
 
@@ -60,7 +49,7 @@ public class SourceFragment extends android.support.v4.app.Fragment implements A
             }
         }
 
-        mAdapter = new SourceAdapter(ITEMS,getContext(),getActivity(),isDrawer);
+        mAdapter = new SourceAdapter(ITEMS,getActivity(),isDrawer);
     }
 
     @Override
@@ -104,7 +93,7 @@ public class SourceFragment extends android.support.v4.app.Fragment implements A
     }
 
 
-    public interface OnFragmentInteractionListener {
+    interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onSourceFragmentInteraction(String id);
 

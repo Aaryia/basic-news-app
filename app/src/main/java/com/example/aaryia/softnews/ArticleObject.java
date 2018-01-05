@@ -1,14 +1,16 @@
 package com.example.aaryia.softnews;
 
+import android.content.Context;
 import android.util.Log;
-
+import android.widget.ImageView;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.util.Objects;
 
 /**
  * Created by aaryia on 23/11/17.
+ * SoftNews web APP for lectures
+ * Centrale Marseille 2017-2018
  */
 
 class ArticleObject {
@@ -19,77 +21,53 @@ class ArticleObject {
     private String url = "";
     private String date = "";
     private String description = "Pas de description pour cet article, désolé";
-    private String urlToImage = "";
+    private ImageView drawable;
 
 
-    ArticleObject(JSONObject jsonObject, String source){
+    ArticleObject(JSONObject jsonObject, String source, Context context){
         try{
             if(jsonObject.getString("author")!=null&& !Objects.equals(jsonObject.getString("author"), "null")){author = jsonObject.getString("author");}
             if(jsonObject.getString("title")!=null&& !Objects.equals(jsonObject.getString("title"), "null")){title = jsonObject.getString("title");}
             if(jsonObject.getString("url")!=null&& !Objects.equals(jsonObject.getString("url"), "null")){url = jsonObject.getString("url");}
-            if(jsonObject.getString("urlToImage")!=null&& !Objects.equals(jsonObject.getString("urlToImage"), "null")){urlToImage = jsonObject.getString("urlToImage");}
             if(jsonObject.getString("description")!=null&& !Objects.equals(jsonObject.getString("description"), "null")){description = jsonObject.getString("description");}
             if(jsonObject.getString("publishedAt")!=null&& !Objects.equals(jsonObject.getString("publishedAt"), "null")){date = jsonObject.getString("publishedAt").substring(0,10);}
             this.source = source;
+
+            drawable = new ImageView(context);
+            if(jsonObject.getString("urlToImage")!=null&&!Objects.equals(jsonObject.getString("urlToImage"), "null")&&(jsonObject.getString("urlToImage").contains(".jpg")||jsonObject.getString("urlToImage").contains(".png"))){
+                    new DownloadImageTask(drawable).execute(jsonObject.getString("urlToImage"));
+            }else{drawable = null;}
         } catch (JSONException e){
             Log.e("Article Object", "ArticleObject: Error Parsing JSON", e);
         }
     }
 
 
+    public ImageView getDrawable(){return drawable;}
 
-    public String getDate(){
+    String getDate(){
         return date;
     }
 
-    public String getSource() {
+    String getSource() {
         return source;
     }
 
-    public void setSource(String source) {
-        this.source = source;
-    }
-
-    public String getAuthor() {
+    String getAuthor() {
         return author;
     }
 
-    public void setAuthor(String author) {
-        this.author = author;
-    }
-
-    public String getTitle() {
+    String getTitle() {
         return title;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getUrl() {
+    String getUrl() {
         return url;
     }
 
-    public void setUrl(String url) {
-        this.url = url;
-    }
-
-    public String getUrlToImage() {
-        return urlToImage;
-    }
-
-    public void setUrlToImage(String urlToImage) {
-        this.urlToImage = urlToImage;
-    }
-
-    public String getDescription() {
+    String getDescription() {
         return description;
     }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
 
     @Override
     public String toString() {

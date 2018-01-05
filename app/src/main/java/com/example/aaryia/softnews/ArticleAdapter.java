@@ -1,14 +1,8 @@
 package com.example.aaryia.softnews;
 
-/**
- * Created by aaryia on 23/11/17.
- */
-
 import android.content.Context;
-import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.Layout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,11 +16,11 @@ class ArticleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
 
     private static final String TAG = "Article Adapter :";
-    List<ArticleObject> list;
+    private List<ArticleObject> list;
     private final int LEFT = 0, RIGHT = 1, PROGRESS = 2;
     private boolean loading;
     private OnLoadMoreListener onLoadMoreListener;
-    Context contextMain;
+    private Context contextMain;
 
     //Les entiers nécessaires à la mise en place de la progress bar
     private int visibleThreshold = 2;
@@ -44,7 +38,7 @@ class ArticleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     //ajouter un constructeur prenant en entrée une liste
-    public ArticleAdapter(List<ArticleObject> list, RecyclerView recyclerView, Context contextMain) {
+    ArticleAdapter(List<ArticleObject> list, RecyclerView recyclerView, Context contextMain) {
         this.list = list;
         this.contextMain = contextMain;
 
@@ -55,7 +49,7 @@ class ArticleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             final LinearLayoutManager linearLayoutManager = (LinearLayoutManager) recyclerView
                     .getLayoutManager();
 
-
+            //Cet OnScrollListener permet de savoir si l'on est à la fin de la liste, afin de charger la suite pour l'utilisateur.
             recyclerView
                     .addOnScrollListener(new RecyclerView.OnScrollListener() {
                         @Override
@@ -110,7 +104,7 @@ class ArticleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     //Indique à l'adapteur s'il faut rajouter une progress bar
-    public void setDone() {
+    void setDone() {
         loading = false;
     }
 
@@ -139,23 +133,23 @@ class ArticleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         return list.size();
     }
 
+    //On crée une classe spécifique pour afficher le loader lorsque l'on veut charger plus de pages.
+    private static class ProgressViewHolder extends RecyclerView.ViewHolder {
+        ProgressBar progressBar;
 
-    public static class ProgressViewHolder extends RecyclerView.ViewHolder {
-        public ProgressBar progressBar;
-
-        public ProgressViewHolder(View v){
+        ProgressViewHolder(View v){
             super(v);
-            progressBar = (ProgressBar) v.findViewById(R.id.progressBar_item);
+            progressBar = v.findViewById(R.id.progressBar_item);
         }
     }
 
 
 
-    public void setOnLoadMoreListener(OnLoadMoreListener onLoadMoreListener) {
+    void setOnLoadMoreListener(OnLoadMoreListener onLoadMoreListener) {
         this.onLoadMoreListener = onLoadMoreListener;
     }
 
-    public interface OnLoadMoreListener {
+    interface OnLoadMoreListener {
         void onLoadMore();
     }
 }

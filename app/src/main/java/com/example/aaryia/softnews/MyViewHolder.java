@@ -1,50 +1,29 @@
 package com.example.aaryia.softnews;
 
 import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.res.Resources;
-import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.TextView;
-
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
-
-import org.json.JSONObject;
-
-import javax.xml.transform.Source;
-
-import static com.example.aaryia.softnews.ArticleList.ARTICLES_ITEMS;
-import static com.example.aaryia.softnews.ArticleList.addArticleItem;
-import static com.example.aaryia.softnews.ArticleList.deleteArticles;
 import static com.example.aaryia.softnews.SourceList.ITEMS;
 
 
 /**
  * Created by aaryia on 23/11/17.
+ * SoftNews web APP for lectures
+ * Centrale Marseille 2017-2018
  */
 
-public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
     private String TAG = "ViewHolder";
     private ImageView imageView;
-    private Context context;
     private SourceDisplayActivity sourceDisplayActivity;
 
     //itemView est la vue correspondante à 1 cellule
-    public MyViewHolder(View itemView,Context context,Context contextMain) {
+    MyViewHolder(View itemView, Context contextMain) {
         super(itemView);
-        this.context=context;
         sourceDisplayActivity = (SourceDisplayActivity) contextMain;
 
         //c'est ici que l'on fait nos findView
@@ -52,9 +31,9 @@ public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClic
         itemView.setOnClickListener(this);
     }
 
-    //puis ajouter une fonction pour remplir la cellule en fonction d'un SourceObject
+    //On remplit ici les images du fragment avec les logos des sources
 
-    public void bind(SourceObject myObject){
+    void bind(SourceObject myObject){
 
         switch(myObject.getId()) {
             case "google-news-fr":
@@ -78,6 +57,9 @@ public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClic
         }
     }
 
+
+    //Lors du clic sur un item on récupère la View et sa position
+    // et on en tire la source qui nous servira pour charger le fragment des articles
     @Override
     public void onClick(View view) {
         Log.i(TAG, "onClick: Activated view = "+ITEMS.get(getLayoutPosition()).getName());

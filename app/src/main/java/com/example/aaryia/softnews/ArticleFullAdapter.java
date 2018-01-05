@@ -1,40 +1,32 @@
 package com.example.aaryia.softnews;
 
-import android.bluetooth.BluetoothClass;
+
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.os.AsyncTask;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
-import android.webkit.WebChromeClient;
-import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import java.util.Objects;
 
-import java.io.InputStream;
-import java.net.URL;
-
-import javax.xml.transform.Source;
 
 /**
  * Created by aaryia on 03/01/18.
+ * SoftNews web APP for lectures
+ * Centrale Marseille 2017-2018
  */
 
-public class ArticleFullAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+class ArticleFullAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private static final String TAG = "Article Full Adapter :";
-    ArticleObject article;
-    SourceDisplayActivity sourceDisplayActivity;
+    private ArticleObject article;
+    private SourceDisplayActivity sourceDisplayActivity;
 
-    public ArticleFullAdapter(ArticleObject articleObject, Context context){
+    ArticleFullAdapter(ArticleObject articleObject, Context context){
         this.article = articleObject;
         sourceDisplayActivity = (SourceDisplayActivity) context;
     }
@@ -61,16 +53,15 @@ public class ArticleFullAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     private class ArticleFullViewHolder extends RecyclerView.ViewHolder {
 
-        public TextView title;
-        public TextView description;
-        public TextView credits;
-        public ImageView image;
-        public Button button;
-        public WebView webView;
-        public SourceDisplayActivity sourceDisplayActivity;
+        TextView title;
+        TextView description;
+        TextView credits;
+        ImageView image;
+        Button button;
+        SourceDisplayActivity sourceDisplayActivity;
 
 
-        public ArticleFullViewHolder(View v, SourceDisplayActivity sourceDisplayActivity) {
+        ArticleFullViewHolder(View v, SourceDisplayActivity sourceDisplayActivity) {
             super(v);
             v.setOverScrollMode(View.OVER_SCROLL_NEVER);
             title = v.findViewById(R.id.article_title);
@@ -81,75 +72,64 @@ public class ArticleFullAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             this.sourceDisplayActivity = sourceDisplayActivity;
         }
 
-        public void bind(ArticleObject myObject) {
+        void bind(ArticleObject myObject) {
             title.setText(myObject.getTitle());
             description.setText(myObject.getDescription());
             String creditString = "";
-            if(myObject.getAuthor()!="Unknown"){
+            if(!Objects.equals(myObject.getAuthor(), "Unknown")){
                 creditString = creditString.concat("Auteur : " + myObject.getAuthor());
             }
-            if(myObject.getSource()!=""&&myObject.getAuthor()!="Unknown"){
+            if(!Objects.equals(myObject.getSource(), "") && !Objects.equals(myObject.getAuthor(), "Unknown")){
                 creditString = creditString.concat(" | Source : " + myObject.getSource());
-            }else if(myObject.getSource()!=""){
+            }else if(!Objects.equals(myObject.getSource(), "")){
                 creditString = creditString.concat("Source : " + myObject.getSource());
             }
-            if(myObject.getDate()!=""){
+            if(!Objects.equals(myObject.getDate(), "")){
                 creditString = creditString.concat("\nPublié le : "+myObject.getDate());
             }
             credits.setText(creditString);
 
-
-            if (myObject.getUrlToImage() != null && !myObject.getUrlToImage().isEmpty() && myObject.getUrlToImage() != "null") {
-                Log.d(TAG, "bind: " + myObject.getUrlToImage());
-                new DownLoadImageTask(image).execute(myObject.getUrlToImage());
+            if(article.getUrl()==null|| Objects.equals(article.getUrl(), "")){
+                button.setText(R.string.button_no_article);
+                button.setClickable(false);
+            } else {
+                button.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Log.d(TAG, "onClick: url is : " + article.getUrl());
+                        Intent intent = new Intent(sourceDisplayActivity, WebViewActivity.class);
+                        intent.putExtra("url", article.getUrl());
+                        sourceDisplayActivity.startActivity(intent);
+                    }
+                });
             }
 
-            button.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Intent intent = new Intent(sourceDisplayActivity,WebViewActivity.class);
-                    intent.putExtra("url",article.getUrl());
-                    sourceDisplayActivity.startActivity(intent);
+
+            if (myObject.getDrawable()!=null){
+                image.setImageDrawable(myObject.getDrawable().getDrawable());
+            } else {
+                Log.d(TAG, "bind: " + myObject.getSource());
+                switch (myObject.getSource()) {
+                    case "google-news-fr":
+                        image.setImageResource(R.drawable.google_logo);
+                        break;
+                    case "le-monde":
+                        image.setImageResource(R.drawable.le_monde);
+                        break;
+                    case "lequipe":
+                        image.setImageResource(R.drawable.l_equipe);
+                        break;
+                    case "les-echos":
+                        image.setImageResource(R.drawable.les_echos);
+                        break;
+                    case "liberation":
+                        image.setImageResource(R.drawable.liberation);
+                        break;
+                    default:
+                        image.setImageResource(R.drawable.question_mark);
+                        break;
                 }
-            });
-        }
-
-    }
-
-
-    private class DownLoadImageTask extends AsyncTask<String, Void, Bitmap> {
-        ImageView imageView;
-
-        public DownLoadImageTask(ImageView imageView) {
-            this.imageView = imageView;
-        }
-
-        /*
-            doInBackground(Params... params)
-                Override this method to perform a computation on a background thread.
-         */
-        protected Bitmap doInBackground(String... urls) {
-            String urlOfImage = urls[0];
-            Bitmap logo = null;
-            try {
-                InputStream is = new URL(urlOfImage).openStream();
-                /*
-                    decodeStream(InputStream is)
-                        Decode an input stream into a bitmap.
-                 */
-                logo = BitmapFactory.decodeStream(is);
-            } catch (Exception e) { // Catch the download exception
-                e.printStackTrace();
             }
-            return logo;
-        }
-
-        /*
-            onPostExecute(Result result)
-                Runs on the UI thread after doInBackground(Params...).
-         */
-        protected void onPostExecute(Bitmap result) {
-            imageView.setImageBitmap(result);
         }
     }
 }

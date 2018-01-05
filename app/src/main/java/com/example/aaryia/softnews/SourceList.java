@@ -7,15 +7,17 @@ import java.util.Map;
 
 /**
  * Created by aaryia on 22/11/17.
+ * SoftNews web APP for lectures
+ * Centrale Marseille 2017-2018
  */
 
-public class SourceList {
+class SourceList {
 
 
-    public static List<SourceObject> ITEMS = new ArrayList<SourceObject>();
-    public static Map<String, SourceObject> ITEM_MAP = new HashMap<String, SourceObject>();
+    static List<SourceObject> ITEMS = new ArrayList<>();
+    private static Map<String, SourceObject> ITEM_MAP = new HashMap<>();
 
-    protected static void addItem(SourceObject item) {
+    static void addItem(SourceObject item) {
         ITEMS.add(item);
         ITEM_MAP.put(item.id, item);
     }

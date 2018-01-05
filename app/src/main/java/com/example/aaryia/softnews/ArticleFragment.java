@@ -1,10 +1,8 @@
 package com.example.aaryia.softnews;
 
-import android.app.Activity;
+
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -13,23 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ListAdapter;
-import android.widget.TextView;
-
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
-
-import org.json.JSONObject;
-
 import static com.example.aaryia.softnews.ArticleList.ARTICLES_ITEMS;
-import static com.example.aaryia.softnews.ArticleList.SOURCE;
-import static com.example.aaryia.softnews.ArticleList.addArticleItem;
-import static com.example.aaryia.softnews.ArticleList.deleteArticles;
 import static com.example.aaryia.softnews.SourceList.*;
 
     /**
@@ -46,7 +28,7 @@ import static com.example.aaryia.softnews.SourceList.*;
         private RecyclerView mListView;
 
         //The Adapter which will be used to populate the ListView/GridView with Views.
-        private ArticleAdapter mAdapter;
+        ArticleAdapter mAdapter;
         private SourceDisplayActivity sourceDisplayActivity;
 
 
@@ -86,7 +68,7 @@ import static com.example.aaryia.softnews.SourceList.*;
                             //On enlève la barre de progression et on retourne le résultat de la volley
                             ARTICLES_ITEMS.remove(ARTICLES_ITEMS.size() - 1);
                             mAdapter.notifyItemRemoved(ARTICLES_ITEMS.size());
-                            volleyArticleNextPage();
+                            sourceDisplayActivity.volleyArticleNextPage();
                         }
                     }, 2000);
                 }
@@ -94,51 +76,6 @@ import static com.example.aaryia.softnews.SourceList.*;
 
             mListView.setAdapter(mAdapter);
             return view;
-        }
-
-        public void volleyArticleNextPage(){
-            int pageNumber;
-            pageNumber = ((ARTICLES_ITEMS.size()+1)/20)+1;
-            RequestQueue queue = Volley.newRequestQueue(sourceDisplayActivity);
-            String url = sourceDisplayActivity.getString(R.string.url_articles) + SOURCE + "&page="+pageNumber;
-
-            JsonObjectRequest jsObjectRequest = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
-                @Override
-                public void onResponse(JSONObject response) {
-                    JSONObject jsonObject = response;
-                    Log.i(TAG, "onResponse: " + String.valueOf(jsonObject));
-
-                    if (jsonObject != null) {
-                        try {
-
-                            // On rajoute tous les nouveaux articles dans la liste
-                            for (int i = 0; i < jsonObject.getJSONArray("articles").length(); i++) {
-
-                                Log.i(TAG, "onCreateView: " + jsonObject.getJSONArray("articles").getJSONObject(i).getString("title"));
-                                //Puts all the sources in a sourceList.
-                                addArticleItem(new ArticleObject(jsonObject.getJSONArray("articles").getJSONObject(i), SOURCE));
-                            }
-
-                            // Notification du changement et que le chargement est fini.
-                            mAdapter.notifyItemInserted(ARTICLES_ITEMS.size());
-                            mAdapter.setDone();
-
-                        } catch (Exception e) {
-                            Log.e(TAG, "onAttach: Error thrown while JSON parsing", e);
-                        }
-                    } else {
-                        Log.i(TAG, "onCreateView: JSON Object is null");
-                    }
-                }
-
-            }, new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    Log.e(TAG, "onErrorResponse: we got a problem", error);
-                }
-            });
-            // Ajoute la requête à la RequestQueue pour obtenir le JSON approprié
-            queue.add(jsObjectRequest);
         }
 
         @Override
@@ -155,7 +92,7 @@ import static com.example.aaryia.softnews.SourceList.*;
             }
         }
 
-        public interface OnFragmentInteractionListener {
+        interface OnFragmentInteractionListener {
             void onArticleFragmentInteraction(String id);
 
         }

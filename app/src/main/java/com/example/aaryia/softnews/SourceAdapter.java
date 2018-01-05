@@ -1,57 +1,37 @@
 package com.example.aaryia.softnews;
 
 import android.content.Context;
-import android.content.SharedPreferences;
-import android.database.DataSetObserver;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.ListAdapter;
 import android.widget.TextView;
-
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
-
-import org.json.JSONObject;
-
 import java.util.List;
-
-import static com.example.aaryia.softnews.ArticleList.ARTICLES_ITEMS;
-import static com.example.aaryia.softnews.ArticleList.addArticleItem;
-import static com.example.aaryia.softnews.ArticleList.deleteArticles;
 import static com.example.aaryia.softnews.SourceList.ITEMS;
 
 /**
  * Created by aaryia on 23/11/17.
+ * SoftNews web APP for lectures
+ * Centrale Marseille 2017-2018
  */
 
 class SourceAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    List<SourceObject> list;
-    Context context;
-    Context contextMain;
+    private List<SourceObject> list;
+    private Context contextMain;
     private boolean isDrawer = false;
     private final int DRAWER = 1, NOT_DRAWER = 0;
 
     //ajouter un constructeur prenant en entrée une liste
-    public SourceAdapter(List<SourceObject> list, Context context, Context contextMain, boolean isDrawer) {
+    SourceAdapter(List<SourceObject> list, Context contextMain, boolean isDrawer) {
         this.list = list;
-        this.context = context;
         this.contextMain = contextMain;
         this.isDrawer = isDrawer;
     }
 
+    //On vérifie ici si l'on doit afficher les sources pour le drawer ou pour le fragment principal
     @Override
     public int getItemViewType(int position) {
         if (isDrawer) {
@@ -76,11 +56,11 @@ class SourceAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
             case NOT_DRAWER:
                 View v2 = inflater.inflate(R.layout.fragment_item, viewGroup, false);
-                viewHolder = new MyViewHolder(v2, context, contextMain);
+                viewHolder = new MyViewHolder(v2, contextMain);
                 break;
             default:
                 View v3 = inflater.inflate(R.layout.fragment_item, viewGroup, false);
-                viewHolder = new MyViewHolder(v3, context, contextMain);
+                viewHolder = new MyViewHolder(v3, contextMain);
         }
         return viewHolder;
     }
@@ -108,17 +88,15 @@ class SourceAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private class SourceDrawerViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         private static final String TAG = "SourceDrawerViewHolder";
-        public TextView source;
-        public CardView cardView;
+        TextView source;
 
-
-        public SourceDrawerViewHolder(View v) {
+        SourceDrawerViewHolder(View v) {
             super(v);
             source = v.findViewById(R.id.textView_sources);
             v.setOnClickListener(this);
         }
 
-        public void bind(SourceObject myObject) {
+        void bind(SourceObject myObject) {
             source.setText(myObject.getName());
         }
 

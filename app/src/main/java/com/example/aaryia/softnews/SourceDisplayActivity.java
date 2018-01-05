@@ -1,11 +1,9 @@
 package com.example.aaryia.softnews;
 
-
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
-import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
@@ -17,12 +15,9 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
-import android.widget.TextView;
-
 import com.android.volley.AuthFailureError;
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.NetworkError;
-import com.android.volley.NoConnectionError;
 import com.android.volley.ParseError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -32,9 +27,8 @@ import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
-
 import org.json.JSONObject;
-
+import java.util.Objects;
 import static com.example.aaryia.softnews.ArticleList.ARTICLES_ITEMS;
 import static com.example.aaryia.softnews.ArticleList.addArticleItem;
 import static com.example.aaryia.softnews.ArticleList.deleteArticles;
@@ -45,7 +39,7 @@ public class SourceDisplayActivity extends AppCompatActivity implements SourceFr
 
     private JSONObject jsonObject = null;
     String TAG = "SourceDisplayActivity";
-    public boolean isDrawerOpen = false, NON_DISPLAYED=true, DOWNLOADING = false, ERROR_SHOWING=false;
+    public boolean isDrawerOpen = false, NON_DISPLAYED=true, ERROR_SHOWING=false, LOAD_MORE=true;
 
     private String source;
     private ProgressBar progressBar;
@@ -53,10 +47,9 @@ public class SourceDisplayActivity extends AppCompatActivity implements SourceFr
     private ActionBarDrawerToggle mDrawerToggle;
     private SharedPreferences sharedPref;
     private SharedPreferences.Editor editor;
-
+    private int batchNumber = 0;
     private Bundle savedInstanceState;
     public final int SOURCE = 0, ARTICLE_LIST_NO_CHANGE = 1, ARTICLE_FULL = 2, ARTICLE_LIST = 3,TIMEOUT=3000;
-
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -111,14 +104,11 @@ public class SourceDisplayActivity extends AppCompatActivity implements SourceFr
 
     }
 
-    /* Méthode à implementer permettant l’interaction avec le fragment */
+    //Méthodes appelées depuis les fragments
     @Override
     public void onSourceFragmentInteraction(String id) {
-        //Méthode appelée depuis le fragment
         Log.i(TAG, "onFragmentInteraction: " + id);
-
     }
-
     @Override
     public void onArticleFragmentInteraction(String id) {
         //Méthode appelée depuis le fragment
@@ -126,27 +116,17 @@ public class SourceDisplayActivity extends AppCompatActivity implements SourceFr
 
     }
 
+    //Gestion du clic sur le bouton de la toolbar s'il est présent.
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        // Activate the navigation drawer toggle
-        if (mDrawerToggle.onOptionsItemSelected(item)) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
+        return mDrawerToggle.onOptionsItemSelected(item) || super.onOptionsItemSelected(item);
     }
 
     /* Pour la touche retour arrière : s'il y a un fragment dans le FragmentManager, on regarde quel est le fragment visible.
     * Si c'est un article on revient à la liste des articles.
     * Si c'est la liste des articles on revient à la liste des sources,
     * Et si c'est la liste des sources on ferme l'application.
-    * */
-
+    */
     public void onBackPressed(){
 
         FragmentManager fm = getSupportFragmentManager();
@@ -200,9 +180,8 @@ public class SourceDisplayActivity extends AppCompatActivity implements SourceFr
     }
 
 
-//Méthodes volley allant charger les sources.
-// La première sert pour le chargement du fragment principal et le second pour le drawerLayout.
-
+    // Méthodes volley allant charger les sources.
+    // La première sert pour le chargement du fragment principal et le second pour le drawerLayout.
     public void volleyConnectionSource(){
 
         //Volley request pour obtenir le JSONObject contenant les sources
@@ -290,9 +269,11 @@ public class SourceDisplayActivity extends AppCompatActivity implements SourceFr
         }
     }
 
-    //Fonction permettant d'aller chercher les articles si et uniquement si l'utilisateur a changé de source
 
+    // Méthodes permettant d'aller chercher les articles si et uniquement si l'utilisateur a changé de source
     public void volleyConnectionArticles(final String source) {
+
+        batchNumber=0;
         //Volley request pour obtenir le JSONObject contenant les sources
         RequestQueue queue = Volley.newRequestQueue(this);
 
@@ -304,7 +285,7 @@ public class SourceDisplayActivity extends AppCompatActivity implements SourceFr
         progressBar.setVisibility(View.VISIBLE);
         setCanDrawerOpen(true);
 
-        if (!(ARTICLES_ITEMS.isEmpty()) && ARTICLES_ITEMS.get(0).getSource() == source) {
+        if (!(ARTICLES_ITEMS.isEmpty()) && Objects.equals(ARTICLES_ITEMS.get(0).getSource(), source)) {
             changeFragment(ARTICLE_LIST_NO_CHANGE);
         } else {
 
@@ -312,16 +293,16 @@ public class SourceDisplayActivity extends AppCompatActivity implements SourceFr
             JsonObjectRequest jsObjectRequest = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
                 @Override
                 public void onResponse(JSONObject response) {
-                    JSONObject jsonObject = response;
-                    Log.i(TAG, "onResponse: " + String.valueOf(jsonObject));
+                    Log.i(TAG, "onResponse: " + String.valueOf(response));
 
-                    if (jsonObject != null) {
+                    if (response != null) {
                         try {
-                            for (int i = 0; i < jsonObject.getJSONArray("articles").length(); i++) {
+                            for (int i = 0; i < response.getJSONArray("articles").length(); i++) {
 
-                                Log.i(TAG, "onCreateView: " + jsonObject.getJSONArray("articles").getJSONObject(i).getString("title"));
-                                //Puts all the sources in a sourceList.
-                                addArticleItem(new ArticleObject(jsonObject.getJSONArray("articles").getJSONObject(i), source));
+                                Log.i(TAG, "onCreateView: " + response.getJSONArray("articles").getJSONObject(i).getString("title"));
+
+                                //On rajoute les articles à la liste des articles
+                                addArticleItem(new ArticleObject(response.getJSONArray("articles").getJSONObject(i), source,SourceDisplayActivity.this));
                             }
                             changeFragment(ARTICLE_LIST);
 
@@ -346,7 +327,171 @@ public class SourceDisplayActivity extends AppCompatActivity implements SourceFr
         }
     }
 
+    // Méthodes permettant d'aller chercher les prochaines pages de la source voulue
+    public void volleyArticleNextPage(){
+        int pageNumber;
+        pageNumber = ((ARTICLES_ITEMS.size()+1)/20)+1;
 
+        if(pageNumber>10){
+
+            ERROR_SHOWING=true;
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setCancelable(false);
+            builder.setTitle("Charger plus d'articles ?");
+
+            builder.setNegativeButton("Non", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                    ERROR_SHOWING=false;
+                }
+            });
+
+            builder.setPositiveButton("J'en veux plus !", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                    ERROR_SHOWING=false;
+                    batchNumber++;
+                    source = ARTICLES_ITEMS.get(0).getSource();
+                    deleteArticles();
+                    volleyArticleNextPage(source);
+                }
+            });
+            AlertDialog dialog = builder.create(); // calling builder.create after adding buttons
+            dialog.show();
+        } else {
+            RequestQueue queue = Volley.newRequestQueue(this);
+            final String source = ARTICLES_ITEMS.get(0).getSource();
+            String url = getString(R.string.url_articles) + ARTICLES_ITEMS.get(0).getSource() + "&page=" + pageNumber + batchNumber * 10;
+
+            JsonObjectRequest jsObjectRequest = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+                @Override
+                public void onResponse(JSONObject response) {
+                    Log.i(TAG, "onResponse: " + String.valueOf(response));
+
+                    if (response != null) {
+                        try {
+
+                            // On rajoute tous les nouveaux articles dans la liste
+                            for (int i = 0; i < response.getJSONArray("articles").length(); i++) {
+
+                                Log.i(TAG, "onCreateView: " + response.getJSONArray("articles").getJSONObject(i).getString("title"));
+                                //Puts all the sources in a sourceList.
+                                addArticleItem(new ArticleObject(response.getJSONArray("articles").getJSONObject(i), source, SourceDisplayActivity.this));
+                            }
+
+                            // Notification du changement et que le chargement est fini.
+                            if (getSupportFragmentManager().findFragmentByTag("Article") != null) {
+                                ArticleFragment articleFragment = (ArticleFragment) getSupportFragmentManager().findFragmentByTag("Article");
+                                if (articleFragment != null) {
+                                    articleFragment.mAdapter.notifyItemInserted(ARTICLES_ITEMS.size());
+                                    articleFragment.mAdapter.setDone();
+                                } else {
+                                    Log.d(TAG, "onResponse: No Fragment");
+                                }
+                            } else {
+                                Log.d(TAG, "onResponse: We got a null Fragment");
+                            }
+
+                        } catch (Exception e) {
+                            Log.e(TAG, "onAttach: Error thrown while JSON parsing", e);
+                        }
+                    } else {
+                        Log.i(TAG, "onCreateView: JSON Object is null");
+                    }
+                }
+
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    volleyError(error, LOAD_MORE);
+                }
+            });
+            // Ajoute la requête à la RequestQueue pour obtenir le JSON approprié
+            queue.add(jsObjectRequest);
+        }
+    }
+    public void volleyArticleNextPage(String sourcePassed){
+        int pageNumber;
+        pageNumber = ((ARTICLES_ITEMS.size()+1)/20)+1;
+
+        if(pageNumber>10){
+
+            ERROR_SHOWING=true;
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setCancelable(false);
+            builder.setTitle("Error");
+            builder.setMessage("No more space");
+
+            builder.setNegativeButton("Quit", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                    ERROR_SHOWING=false;
+                    finish();
+                }
+            });
+
+            builder.setPositiveButton("J'en veux plus !", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                    ERROR_SHOWING=false;
+                    batchNumber++;
+                    source = ARTICLES_ITEMS.get(0).getSource();
+                    deleteArticles();
+                    volleyArticleNextPage(source);
+                }
+            });
+            AlertDialog dialog = builder.create(); // calling builder.create after adding buttons
+            dialog.show();
+        } else {
+            RequestQueue queue = Volley.newRequestQueue(this);
+            final String source = sourcePassed;
+            String url = getString(R.string.url_articles) + source + "&page=" + pageNumber + batchNumber * 10;
+
+            JsonObjectRequest jsObjectRequest = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+                @Override
+                public void onResponse(JSONObject response) {
+                    Log.i(TAG, "onResponse: " + String.valueOf(response));
+
+                    if (response != null) {
+                        try {
+
+                            // On rajoute tous les nouveaux articles dans la liste
+                            for (int i = 0; i < response.getJSONArray("articles").length(); i++) {
+
+                                Log.i(TAG, "onCreateView: " + response.getJSONArray("articles").getJSONObject(i).getString("title"));
+                                //Puts all the sources in a sourceList.
+                                addArticleItem(new ArticleObject(response.getJSONArray("articles").getJSONObject(i), source, SourceDisplayActivity.this));
+                            }
+
+                            // Notification du changement et que le chargement est fini.
+                            changeFragment(ARTICLE_LIST);
+
+                        } catch (Exception e) {
+                            Log.e(TAG, "onAttach: Error thrown while JSON parsing", e);
+                        }
+                    } else {
+                        Log.i(TAG, "onCreateView: JSON Object is null");
+                    }
+                }
+
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    volleyError(error, LOAD_MORE);
+                }
+            });
+            // Ajoute la requête à la RequestQueue pour obtenir le JSON approprié
+            queue.add(jsObjectRequest);
+        }
+    }
+
+
+    // Méthode gérant le retour d'erreur des volleys, affichant le popup
+    // et lançant les volleys à nouveau si l'utilisateur clique sur retry
     public void volleyError(VolleyError volleyError){
         String message = null;
 
@@ -366,8 +511,61 @@ public class SourceDisplayActivity extends AppCompatActivity implements SourceFr
             message = "Parsing error! Please try again after some time!!";
             Log.e(TAG, "onErrorResponse: VolleyError"+volleyError.toString(),volleyError );
 
-        } else if (volleyError instanceof NoConnectionError) {
+        } else if (volleyError instanceof TimeoutError) {
+            message = "Connection TimeOut! Please check your internet connection.";
+            Log.e(TAG, "onErrorResponse: VolleyError"+volleyError.toString(),volleyError );
+
+        } else {
+            Log.e(TAG, "onErrorResponse: VolleyError"+volleyError.toString(),volleyError );
+        }
+
+        if(!ERROR_SHOWING) {
+
+            final String finalMessage = message + "\nPlease retry.";
+
+            ERROR_SHOWING=true;
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setCancelable(false);
+            builder.setTitle("Connection Error");
+            builder.setMessage(finalMessage);
+            builder.setNegativeButton("Quit", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        ERROR_SHOWING = false;
+                        finish();
+                    }
+            });
+
+            builder.setPositiveButton("Retry", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                    ERROR_SHOWING=false;
+                    initiateDownload();
+                }
+            });
+            AlertDialog dialog = builder.create(); // calling builder.create after adding buttons
+            dialog.show();
+        }
+    }
+    public void volleyError(VolleyError volleyError, final boolean b){
+        String message = null;
+
+        if (volleyError instanceof NetworkError) {
             message = "Cannot connect to Internet...Please check your connection!";
+            Log.e(TAG, "onErrorResponse: VolleyError"+volleyError.toString(),volleyError );
+
+        } else if (volleyError instanceof ServerError) {
+            message = "The server could not be found. Please try again after some time!!";
+            Log.e(TAG, "onErrorResponse: VolleyError"+volleyError.toString(),volleyError );
+
+        } else if (volleyError instanceof AuthFailureError) {
+            message = "Cannot connect to Internet...Please check your connection!";
+            Log.e(TAG, "onErrorResponse: VolleyError"+volleyError.toString(),volleyError );
+
+        } else if (volleyError instanceof ParseError) {
+            message = "Parsing error! Please try again after some time!!";
             Log.e(TAG, "onErrorResponse: VolleyError"+volleyError.toString(),volleyError );
 
         } else if (volleyError instanceof TimeoutError) {
@@ -400,10 +598,12 @@ public class SourceDisplayActivity extends AppCompatActivity implements SourceFr
                 public void onClick(DialogInterface dialog, int which) {
                     dialog.dismiss();
                     ERROR_SHOWING=false;
-                    initiateDownload();
+                    if(b){
+                        volleyArticleNextPage();
+                    }
                 }
             });
-            AlertDialog dialog = builder.create(); // calling builder.create after adding buttons
+            AlertDialog dialog = builder.create(); // On crée le builder après avoir appelé les boutons
             dialog.show();
         }
     }
@@ -492,8 +692,11 @@ public class SourceDisplayActivity extends AppCompatActivity implements SourceFr
         progressBar.setVisibility(View.INVISIBLE);
     }
 
+
+    //Méthode lançant les volleys pour récuperer du site NewsAPI les informations
+    // en fonction de la dernière source visitée par l'utilisateur
     public void initiateDownload(){
-        if (source != "no source") {
+        if (!Objects.equals(source, "no source")) {
             Log.d(TAG, "onCreate: there is an initial source : "+source);
             volleyConnectionArticles(source);
             volleyConnectionSource(NON_DISPLAYED);

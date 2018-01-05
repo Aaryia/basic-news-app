@@ -4,26 +4,21 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 /**
  * Created by aaryia on 22/11/17.
+ * SoftNews web APP for lectures
+ * Centrale Marseille 2017-2018
  */
 
-public class ArticleList {
+class ArticleList {
 
 
-    public static List<ArticleObject> ARTICLES_ITEMS = new ArrayList<ArticleObject>();
-    public static Map<String, ArticleObject> ARTICLES_ITEM_MAP = new HashMap<String, ArticleObject>();
-    public static String SOURCE = "";
+    static List<ArticleObject> ARTICLES_ITEMS = new ArrayList<>();
+    private static Map<String, ArticleObject> ARTICLES_ITEM_MAP = new HashMap<>();
 
-    protected static void addArticleItem(ArticleObject item) {
+    static void addArticleItem(ArticleObject item) {
         ARTICLES_ITEMS.add(item);
         ARTICLES_ITEM_MAP.put(item.getTitle(), item);
-        SOURCE = item.getSource();
     }
 
     @Override
@@ -31,7 +26,7 @@ public class ArticleList {
         return ARTICLES_ITEMS.toString();
     }
 
-    protected static void deleteArticles() {
+    static void deleteArticles() {
         ARTICLES_ITEMS.clear();
         ARTICLES_ITEM_MAP.clear();
     }
