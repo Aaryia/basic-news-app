@@ -2,6 +2,7 @@ package com.example.aaryia.softnews;
 
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.support.design.widget.NavigationView;
@@ -9,6 +10,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -17,9 +19,16 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.DefaultRetryPolicy;
+import com.android.volley.NetworkError;
+import com.android.volley.NoConnectionError;
+import com.android.volley.ParseError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
+import com.android.volley.ServerError;
+import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
@@ -36,8 +45,9 @@ public class SourceDisplayActivity extends AppCompatActivity implements SourceFr
 
     private JSONObject jsonObject = null;
     String TAG = "SourceDisplayActivity";
-    public boolean isDrawerOpen = false, NON_DISPLAYED=true;
+    public boolean isDrawerOpen = false, NON_DISPLAYED=true, DOWNLOADING = false, ERROR_SHOWING=false;
 
+    private String source;
     private ProgressBar progressBar;
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mDrawerToggle;
@@ -45,7 +55,7 @@ public class SourceDisplayActivity extends AppCompatActivity implements SourceFr
     private SharedPreferences.Editor editor;
 
     private Bundle savedInstanceState;
-    public final int SOURCE = 0, ARTICLE_LIST_NO_CHANGE = 1, ARTICLE_FULL = 2, ARTICLE_LIST = 3;
+    public final int SOURCE = 0, ARTICLE_LIST_NO_CHANGE = 1, ARTICLE_FULL = 2, ARTICLE_LIST = 3,TIMEOUT=3000;
 
 
     @Override
@@ -92,15 +102,12 @@ public class SourceDisplayActivity extends AppCompatActivity implements SourceFr
 
         //Chargement du bon fragment selon la dernière source choisie par l'utilisateur
         sharedPref = getPreferences(Context.MODE_PRIVATE);
-        String source = sharedPref.getString(getString(R.string.last_sources),"no source");
+        source = sharedPref.getString(getString(R.string.last_sources),"no source");
         editor = sharedPref.edit();
 
-        if (source!="no source") {
-            volleyConnectionArticles(source);
-            volleyConnectionSource(NON_DISPLAYED);
-        } else {
-            volleyConnectionSource();
-        }
+        // On lance le téléchargement des données
+        initiateDownload();
+
 
     }
 
@@ -193,7 +200,8 @@ public class SourceDisplayActivity extends AppCompatActivity implements SourceFr
     }
 
 
-
+//Méthodes volley allant charger les sources.
+// La première sert pour le chargement du fragment principal et le second pour le drawerLayout.
 
     public void volleyConnectionSource(){
 
@@ -229,10 +237,10 @@ public class SourceDisplayActivity extends AppCompatActivity implements SourceFr
 
             }, new Response.ErrorListener() {
                 @Override
-                public void onErrorResponse(VolleyError error) {
-                    Log.e(TAG, "onErrorResponse: we got a problem", error);
-                }
+                public void onErrorResponse(VolleyError volleyError) {volleyError(volleyError);}
             });
+
+            jsObjectRequest.setRetryPolicy(new DefaultRetryPolicy(TIMEOUT,2,1));
 
             // Ajoute la requête à la RequestQueue pour obtenir le JSON approprié
             queue.add(jsObjectRequest);
@@ -273,10 +281,9 @@ public class SourceDisplayActivity extends AppCompatActivity implements SourceFr
 
             }, new Response.ErrorListener() {
                 @Override
-                public void onErrorResponse(VolleyError error) {
-                    Log.e(TAG, "onErrorResponse: we got a problem", error);
-                }
-            });
+              public void onErrorResponse(VolleyError volleyError) {volleyError(volleyError);}});
+
+            jsObjectRequest.setRetryPolicy(new DefaultRetryPolicy(TIMEOUT,2,1));
 
             // Ajoute la requête à la RequestQueue pour obtenir le JSON approprié
             queue.add(jsObjectRequest);
@@ -328,21 +335,86 @@ public class SourceDisplayActivity extends AppCompatActivity implements SourceFr
 
             }, new Response.ErrorListener() {
                 @Override
-                public void onErrorResponse(VolleyError error) {
-                    Log.e(TAG, "onErrorResponse: we got a problem", error);
-                }
+                public void onErrorResponse(VolleyError volleyError) {volleyError(volleyError);}
             });
+
+            jsObjectRequest.setRetryPolicy(new DefaultRetryPolicy(TIMEOUT,2,1));
+
             // Ajoute la requête à la RequestQueue pour obtenir le JSON approprié
             queue.add(jsObjectRequest);
 
         }
     }
+
+
+    public void volleyError(VolleyError volleyError){
+        String message = null;
+
+        if (volleyError instanceof NetworkError) {
+            message = "Cannot connect to Internet...Please check your connection!";
+            Log.e(TAG, "onErrorResponse: VolleyError"+volleyError.toString(),volleyError );
+
+        } else if (volleyError instanceof ServerError) {
+            message = "The server could not be found. Please try again after some time!!";
+            Log.e(TAG, "onErrorResponse: VolleyError"+volleyError.toString(),volleyError );
+
+        } else if (volleyError instanceof AuthFailureError) {
+            message = "Cannot connect to Internet...Please check your connection!";
+            Log.e(TAG, "onErrorResponse: VolleyError"+volleyError.toString(),volleyError );
+
+        } else if (volleyError instanceof ParseError) {
+            message = "Parsing error! Please try again after some time!!";
+            Log.e(TAG, "onErrorResponse: VolleyError"+volleyError.toString(),volleyError );
+
+        } else if (volleyError instanceof NoConnectionError) {
+            message = "Cannot connect to Internet...Please check your connection!";
+            Log.e(TAG, "onErrorResponse: VolleyError"+volleyError.toString(),volleyError );
+
+        } else if (volleyError instanceof TimeoutError) {
+            message = "Connection TimeOut! Please check your internet connection.";
+            Log.e(TAG, "onErrorResponse: VolleyError"+volleyError.toString(),volleyError );
+
+        } else {
+            Log.e(TAG, "onErrorResponse: VolleyError"+volleyError.toString(),volleyError );
+        }
+
+        if(!ERROR_SHOWING) {
+
+            ERROR_SHOWING=true;
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setCancelable(false);
+            builder.setTitle("Connection Error");
+            builder.setMessage(message + "\nPlease retry.");
+
+            builder.setNegativeButton("Quit", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                    ERROR_SHOWING=false;
+                    finish();
+                }
+            });
+
+            builder.setPositiveButton("Retry", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                    ERROR_SHOWING=false;
+                    initiateDownload();
+                }
+            });
+            AlertDialog dialog = builder.create(); // calling builder.create after adding buttons
+            dialog.show();
+        }
+    }
+
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         mDrawerToggle.onConfigurationChanged(newConfig);
     }
 
+    //Méthode permettant de changer de fragment affiché dans l'activité
     public void changeFragment(int fragmentType){
 
         ArticleFragment articleFragment = new ArticleFragment();
@@ -418,6 +490,17 @@ public class SourceDisplayActivity extends AppCompatActivity implements SourceFr
 
         }
         progressBar.setVisibility(View.INVISIBLE);
+    }
+
+    public void initiateDownload(){
+        if (source != "no source") {
+            Log.d(TAG, "onCreate: there is an initial source : "+source);
+            volleyConnectionArticles(source);
+            volleyConnectionSource(NON_DISPLAYED);
+        } else {
+            Log.d(TAG, "onCreate: There is no  initial source");
+            volleyConnectionSource();
+        }
     }
 
 }

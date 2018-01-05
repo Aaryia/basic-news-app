@@ -17,6 +17,7 @@ class ArticleObject {
     private String author = "Unknown";
     private String title = "";
     private String url = "";
+    private String date = "";
     private String description = "Pas de description pour cet article, désolé";
     private String urlToImage = "";
 
@@ -28,6 +29,7 @@ class ArticleObject {
             if(jsonObject.getString("url")!=null&& !Objects.equals(jsonObject.getString("url"), "null")){url = jsonObject.getString("url");}
             if(jsonObject.getString("urlToImage")!=null&& !Objects.equals(jsonObject.getString("urlToImage"), "null")){urlToImage = jsonObject.getString("urlToImage");}
             if(jsonObject.getString("description")!=null&& !Objects.equals(jsonObject.getString("description"), "null")){description = jsonObject.getString("description");}
+            if(jsonObject.getString("publishedAt")!=null&& !Objects.equals(jsonObject.getString("publishedAt"), "null")){date = jsonObject.getString("publishedAt").substring(0,10);}
             this.source = source;
         } catch (JSONException e){
             Log.e("Article Object", "ArticleObject: Error Parsing JSON", e);
@@ -35,6 +37,10 @@ class ArticleObject {
     }
 
 
+
+    public String getDate(){
+        return date;
+    }
 
     public String getSource() {
         return source;

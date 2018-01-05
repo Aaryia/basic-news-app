@@ -84,7 +84,19 @@ public class ArticleFullAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         public void bind(ArticleObject myObject) {
             title.setText(myObject.getTitle());
             description.setText(myObject.getDescription());
-            credits.setText("Auteur : " + myObject.getAuthor() + " | Source : " + myObject.getSource());
+            String creditString = "";
+            if(myObject.getAuthor()!="Unknown"){
+                creditString = creditString.concat("Auteur : " + myObject.getAuthor());
+            }
+            if(myObject.getSource()!=""&&myObject.getAuthor()!="Unknown"){
+                creditString = creditString.concat(" | Source : " + myObject.getSource());
+            }else if(myObject.getSource()!=""){
+                creditString = creditString.concat("Source : " + myObject.getSource());
+            }
+            if(myObject.getDate()!=""){
+                creditString = creditString.concat("\nPublié le : "+myObject.getDate());
+            }
+            credits.setText(creditString);
 
 
             if (myObject.getUrlToImage() != null && !myObject.getUrlToImage().isEmpty() && myObject.getUrlToImage() != "null") {
